@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Bihari Delicacies Brand Colors */
+  --clay-red: #C44536;
+  --turmeric-yellow: #E4A853;
+  --indigo: #4C5B7C;
+  --leaf-green: #6B8E3D;
+  
+  /* Extended palette */
+  --clay-red-light: #D4635C;
+  --clay-red-dark: #A23D2F;
+  --turmeric-yellow-light: #E8B870;
+  --turmeric-yellow-dark: #D09638;
+  --indigo-light: #5A6A8B;
+  --indigo-dark: #3D486A;
+  --leaf-green-light: #7BA048;
+  --leaf-green-dark: #567432;
+  
+  /* Neutral colors */
+  --warm-white: #FDF8F3;
+  --cream: #F5F1EB;
+  --warm-gray: #8B7355;
+  --dark-brown: #3D2914;
+  
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --accent: 0 0% 96.1%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 0 0% 3.9%;
+  --radius: 0.5rem;
+
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-inter;
+    background: linear-gradient(135deg, #FDF8F3 0%, #F5F1EB 100%);
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair;
+  }
+  
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-clay-red hover:bg-clay-red-dark text-white font-semibold px-6 py-2 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-turmeric-yellow hover:bg-turmeric-yellow-dark text-dark-brown font-semibold px-6 py-2 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-indigo text-indigo hover:bg-indigo hover:text-white font-semibold px-6 py-2 rounded-lg transition-all duration-200;
+  }
+  
+  .card-shadow {
+    box-shadow: 0 4px 6px -1px rgba(196, 69, 54, 0.1), 0 2px 4px -1px rgba(196, 69, 54, 0.06);
+  }
+  
+  .card-hover {
+    @apply transform hover:scale-105 transition-all duration-300 hover:shadow-lg;
+  }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #C44536 0%, #E4A853 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .bg-clay-red { background-color: var(--clay-red); }
+  .bg-clay-red-light { background-color: var(--clay-red-light); }
+  .bg-clay-red-dark { background-color: var(--clay-red-dark); }
+  .bg-turmeric-yellow { background-color: var(--turmeric-yellow); }
+  .bg-turmeric-yellow-light { background-color: var(--turmeric-yellow-light); }
+  .bg-turmeric-yellow-dark { background-color: var(--turmeric-yellow-dark); }
+  .bg-indigo { background-color: var(--indigo); }
+  .bg-indigo-light { background-color: var(--indigo-light); }
+  .bg-indigo-dark { background-color: var(--indigo-dark); }
+  .bg-leaf-green { background-color: var(--leaf-green); }
+  .bg-leaf-green-light { background-color: var(--leaf-green-light); }
+  .bg-leaf-green-dark { background-color: var(--leaf-green-dark); }
+  .bg-warm-white { background-color: var(--warm-white); }
+  .bg-cream { background-color: var(--cream); }
+  .bg-warm-gray { background-color: var(--warm-gray); }
+  .bg-dark-brown { background-color: var(--dark-brown); }
+  
+  .text-clay-red { color: var(--clay-red); }
+  .text-clay-red-light { color: var(--clay-red-light); }
+  .text-clay-red-dark { color: var(--clay-red-dark); }
+  .text-turmeric-yellow { color: var(--turmeric-yellow); }
+  .text-turmeric-yellow-light { color: var(--turmeric-yellow-light); }
+  .text-turmeric-yellow-dark { color: var(--turmeric-yellow-dark); }
+  .text-indigo { color: var(--indigo); }
+  .text-indigo-light { color: var(--indigo-light); }
+  .text-indigo-dark { color: var(--indigo-dark); }
+  .text-leaf-green { color: var(--leaf-green); }
+  .text-leaf-green-light { color: var(--leaf-green-light); }
+  .text-leaf-green-dark { color: var(--leaf-green-dark); }
+  .text-warm-white { color: var(--warm-white); }
+  .text-cream { color: var(--cream); }
+  .text-warm-gray { color: var(--warm-gray); }
+  .text-dark-brown { color: var(--dark-brown); }
+  
+  .border-clay-red { border-color: var(--clay-red); }
+  .border-turmeric-yellow { border-color: var(--turmeric-yellow); }
+  .border-indigo { border-color: var(--indigo); }
+  .border-leaf-green { border-color: var(--leaf-green); }
+}
+
+/* Madhubani-inspired decorative elements */
+@layer utilities {
+  .madhubani-border {
+    border-image: linear-gradient(45deg, var(--clay-red), var(--turmeric-yellow), var(--leaf-green)) 1;
+  }
+  
+  .spice-indicator {
+    @apply inline-flex items-center gap-1;
+  }
+  
+  .spice-dot {
+    @apply w-2 h-2 rounded-full bg-clay-red;
+  }
+  
+  .spice-dot.mild {
+    @apply bg-leaf-green;
+  }
+  
+  .spice-dot.medium {
+    @apply bg-turmeric-yellow;
+  }
+  
+  .spice-dot.hot {
+    @apply bg-clay-red;
+  }
+}
