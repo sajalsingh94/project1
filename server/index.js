@@ -23,26 +23,33 @@ const sessionIdToUserId = new Map();
 const dataDir = path.join(__dirnameCurrent, 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-// SQLite database setup
+// SQLite database setup (optional)
 const dbPath = path.join(dataDir, 'app.db');
-const db = new Database(dbPath);
-db.pragma('journal_mode = WAL');
-db.exec(`
-  CREATE TABLE IF NOT EXISTS sellers (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    business_name TEXT,
-    owner_name TEXT,
-    email TEXT,
-    phone TEXT,
-    address TEXT,
-    city TEXT,
-    state TEXT,
-    description TEXT,
-    profile_image_path TEXT,
-    banner_image_path TEXT,
-    created_at TEXT DEFAULT (datetime('now'))
-  );
-`);
+let db = null;
+try {
+  db = new Database(dbPath);
+  db.pragma('journal_mode = WAL');
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS sellers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      business_name TEXT,
+      owner_name TEXT,
+      email TEXT,
+      phone TEXT,
+      address TEXT,
+      city TEXT,
+      state TEXT,
+      description TEXT,
+      profile_image_path TEXT,
+      banner_image_path TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  console.log('[server] SQLite enabled at', dbPath);
+} catch (err) {
+  db = null;
+  console.warn('[server] SQLite unavailable, falling back to JSON storage. Reason:', err?.message || err);
+}
 
 // File uploads setup
 const uploadDir = path.join(__dirnameCurrent, 'uploads');
@@ -240,27 +247,52 @@ app.post('/api/sellers', upload.fields([
     const profileImage = Array.isArray(files.profile_image) && files.profile_image[0] ? files.profile_image[0].filename : null;
     const bannerImage = Array.isArray(files.banner_image) && files.banner_image[0] ? files.banner_image[0].filename : null;
 
-    const insert = db.prepare(`
-      INSERT INTO sellers (
-        business_name, owner_name, email, phone, address, city, state, description,
-        profile_image_path, banner_image_path
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    const info = insert.run(
-      body.business_name || null,
-      body.owner_name || null,
-      body.email || null,
-      body.phone || null,
-      body.address || null,
-      body.city || null,
-      body.state || null,
-      body.description || null,
-      profileImage ? `/api/uploads/${profileImage}` : null,
-      bannerImage ? `/api/uploads/${bannerImage}` : null
-    );
+    if (db) {
+      const insert = db.prepare(`
+        INSERT INTO sellers (
+          business_name, owner_name, email, phone, address, city, state, description,
+          profile_image_path, banner_image_path
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      const info = insert.run(
+        body.business_name || null,
+        body.owner_name || null,
+        body.email || null,
+        body.phone || null,
+        body.address || null,
+        body.city || null,
+        body.state || null,
+        body.description || null,
+        profileImage ? `/api/uploads/${profileImage}` : null,
+        bannerImage ? `/api/uploads/${bannerImage}` : null
+      );
 
-    const row = db.prepare('SELECT * FROM sellers WHERE id = ?').get(info.lastInsertRowid);
-    res.json({ data: row });
+      const row = db.prepare('SELECT * FROM sellers WHERE id = ?').get(info.lastInsertRowid);
+      res.json({ data: row });
+      return;
+    }
+
+    // Fallback to JSON storage when SQLite is unavailable
+    const sellersFile = tableIdToFile[39101];
+    const sellers = readJson(sellersFile);
+    const nextId = sellers.length ? Math.max(...sellers.map((s) => s.id || 0)) + 1 : 1;
+    const created = {
+      id: nextId,
+      business_name: body.business_name || null,
+      owner_name: body.owner_name || null,
+      email: body.email || null,
+      phone: body.phone || null,
+      address: body.address || null,
+      city: body.city || null,
+      state: body.state || null,
+      description: body.description || null,
+      profile_image_path: profileImage ? `/api/uploads/${profileImage}` : null,
+      banner_image_path: bannerImage ? `/api/uploads/${bannerImage}` : null,
+      created_at: new Date().toISOString()
+    };
+    sellers.push(created);
+    writeJson(sellersFile, sellers);
+    res.json({ data: created });
   } catch (error) {
     console.error('Create seller error', error);
     res.status(500).json({ error: 'Failed to create seller' });
