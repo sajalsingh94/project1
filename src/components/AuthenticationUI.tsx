@@ -99,15 +99,6 @@ const AuthenticationUI: React.FC<AuthenticationUIProps> = ({ className = "" }) =
 
   return (
     <div className={`flex items-center space-x-4 ${className}`}>
-      {/* Cart Icon - could be a separate component */}
-      <Button variant="ghost" size="sm" className="relative" onClick={() => (window.location.href = '/checkout')}>
-        <ShoppingCart className="w-5 h-5" />
-        {/* Cart count badge - you can implement this based on your cart state */}
-        <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-          0
-        </span>
-      </Button>
-
       {/* User Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

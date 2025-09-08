@@ -139,15 +139,20 @@ app.post('/api/orders', (req, res) => {
 
 // Auth routes
 app.post('/api/auth/register', (req, res) => {
-  const { email, password, role } = req.body || {};
+  const { email, password, role, firstName, lastName, phone, address } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
   const users = readJson(usersFile);
   if (users.some((u) => u.Email?.toLowerCase() === String(email).toLowerCase())) {
     return res.status(409).json({ error: 'User already exists' });
   }
+  const nextId = users.length ? Math.max(...users.map((u) => u.ID)) + 1 : 1;
   const newUser = {
-    ID: users.length ? Math.max(...users.map((u) => u.ID)) + 1 : 1,
-    Name: String(email).split('@')[0],
+    ID: nextId,
+    Name: (firstName || lastName) ? `${String(firstName || '').trim()} ${String(lastName || '').trim()}`.trim() : String(email).split('@')[0],
+    FirstName: firstName ? String(firstName) : undefined,
+    LastName: lastName ? String(lastName) : undefined,
+    Phone: phone ? String(phone) : undefined,
+    Address: address ? String(address) : undefined,
     Email: String(email),
     Roles: role || 'user',
     password: String(password)

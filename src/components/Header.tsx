@@ -18,9 +18,28 @@ const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     checkUserAuth();
+    // Initialize cart count from localStorage
+    try {
+      const raw = localStorage.getItem('cartItems');
+      const cart = raw ? JSON.parse(raw) : [];
+      setCartCount(Array.isArray(cart) ? cart.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0) : 0);
+    } catch {}
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'cartItems') {
+        try {
+          const cart = e.newValue ? JSON.parse(e.newValue) : [];
+          setCartCount(Array.isArray(cart) ? cart.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0) : 0);
+        } catch {
+          setCartCount(0);
+        }
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   const checkUserAuth = async () => {
@@ -127,17 +146,15 @@ const Header: React.FC = () => {
                 </Button>
                 <Button variant="ghost" size="sm" className="relative" onClick={() => (window.location.href = '/checkout')}>
                   <ShoppingCart className="w-5 h-5 text-indigo" />
-                  <span className="absolute -top-2 -right-2 bg-clay-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    0
+                  <span className="absolute -top-2 -right-2 bg-clay-red text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
+                    {cartCount}
                   </span>
                 </Button>
               </>
             }
 
             {/* Authentication UI */}
-            {!isLoading &&
-            <AuthenticationUI className="hidden md:flex" user={user} onLogout={handleLogout} />
-            }
+            {!isLoading && <AuthenticationUI className="hidden md:flex" />}
 
             {/* Mobile Menu Toggle */}
             <Button

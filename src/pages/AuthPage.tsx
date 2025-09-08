@@ -76,6 +76,10 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
   = ({ mode, role }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -83,11 +87,15 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
     try {
       emailSchema.parse(email);
       passwordSchema.parse(password);
+      if (mode === 'signup') {
+        // basic sanity checks for extra fields
+        if (!firstName.trim() || !lastName.trim()) return false;
+      }
       return true;
     } catch {
       return false;
     }
-  }, [email, password]);
+  }, [email, password, mode, firstName, lastName]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,13 +109,18 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
           await window.ezsite?.apis?.auth?.login?.({ email, password, role });
         }
       } else {
+        const payload = { email, password, role, firstName, lastName, phone, address } as any;
         if (window.ezsite?.apis?.register) {
-          await window.ezsite.apis.register({ email, password, role });
+          await window.ezsite.apis.register(payload);
         } else {
-          await window.ezsite?.apis?.auth?.register?.({ email, password, role });
+          await window.ezsite?.apis?.auth?.register?.(payload);
         }
       }
-      navigate('/');
+      if (mode === 'signup' && role === 'seller') {
+        navigate('/become-seller');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       console.error('Auth error', err);
     } finally {
@@ -117,6 +130,26 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      {mode === 'signup' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor={`${mode}-first-name`}>First Name</Label>
+            <Input id={`${mode}-first-name`} value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Ram" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${mode}-last-name`}>Last Name</Label>
+            <Input id={`${mode}-last-name`} value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Kumar" />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor={`${mode}-phone`}>Phone</Label>
+            <Input id={`${mode}-phone`} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor={`${mode}-address`}>Address</Label>
+            <Input id={`${mode}-address`} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, City, State" />
+          </div>
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor={`${mode}-email`}>Email</Label>
         <Input
