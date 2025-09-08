@@ -151,15 +151,11 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
         }
         toast({
           title: "Account Created",
-          description: "Your account has been created successfully!"
+          description: "Your account has been created successfully! Please log in to continue."
         });
         
-        // Redirect based on user role after successful registration
-        if (role === 'seller') {
-          navigate('/seller/dashboard');
-        } else {
-          navigate('/');
-        }
+        // Redirect to login page after successful registration
+        navigate('/login?mode=login');
       }
     } catch (err) {
       console.error('Auth error', err);

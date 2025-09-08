@@ -253,6 +253,9 @@ const SellerDashboardPage: React.FC = () => {
         });
         setMainImage(null);
         setAdditionalImages([]);
+        // Navigate back to products tab
+        setActiveTab('products');
+        navigate('/seller/dashboard?tab=products');
       }
     } catch (error) {
       toast({
