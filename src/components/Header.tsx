@@ -125,7 +125,7 @@ const Header: React.FC = () => {
                 <Button variant="ghost" size="sm" className="hidden sm:flex">
                   <Heart className="w-5 h-5 text-indigo" />
                 </Button>
-                <Button variant="ghost" size="sm" className="relative">
+                <Button variant="ghost" size="sm" className="relative" onClick={() => (window.location.href = '/checkout')}>
                   <ShoppingCart className="w-5 h-5 text-indigo" />
                   <span className="absolute -top-2 -right-2 bg-clay-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     0

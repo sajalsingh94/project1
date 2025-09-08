@@ -123,6 +123,20 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true });
 });
 
+// Orders storage
+const ordersFile = 'orders.json';
+if (!fs.existsSync(path.join(dataDir, ordersFile))) writeJson(ordersFile, []);
+
+app.post('/api/orders', (req, res) => {
+  const orders = readJson(ordersFile);
+  const order = req.body || {};
+  const id = orders.length ? Math.max(...orders.map((o) => o.id || 0)) + 1 : 1;
+  const created = { id, createdAt: new Date().toISOString(), ...order };
+  orders.push(created);
+  writeJson(ordersFile, orders);
+  res.json({ data: { id } });
+});
+
 // Auth routes
 app.post('/api/auth/register', (req, res) => {
   const { email, password, role } = req.body || {};

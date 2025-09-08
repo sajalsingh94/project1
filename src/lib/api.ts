@@ -30,6 +30,9 @@ export const api = {
     logout: () => request('/api/auth/logout', { method: 'POST' }),
     me: () => request('/api/auth/me')
   },
+  orders: {
+    create: (payload: any) => request('/api/orders', { method: 'POST', body: JSON.stringify(payload) })
+  },
   table: {
     page: (tableId: number, payload: TablePageRequest) =>
       request(`/api/table/page/${tableId}`, { method: 'POST', body: JSON.stringify(payload) }),
