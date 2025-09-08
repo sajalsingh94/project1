@@ -117,7 +117,7 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
         }
       }
       if (mode === 'signup' && role === 'seller') {
-        navigate('/become-seller');
+        navigate('/seller/dashboard');
       } else {
         navigate('/');
       }
@@ -181,10 +181,11 @@ const AuthPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const modeParam = (searchParams.get('mode') as 'login' | 'signup') || undefined;
+  const roleParam = (searchParams.get('role') as RoleType) || undefined;
   const isRegisterPath = location.pathname.toLowerCase().includes('/register');
   const defaultTab = modeParam || (isRegisterPath ? 'signup' : 'login');
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>(defaultTab);
-  const [role, setRole] = useState<RoleType>('user');
+  const [role, setRole] = useState<RoleType>(roleParam || 'user');
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-xl">

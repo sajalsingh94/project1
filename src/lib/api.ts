@@ -50,7 +50,35 @@ export const api = {
       } catch (error) {
         return { error } as any;
       }
-    }
+    },
+    getMe: () => request('/api/sellers/me')
+  },
+  products: {
+    create: async (payload: any) => {
+      const form = new FormData();
+      Object.entries(payload).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (key === 'main_image' || key === 'additional_images') {
+            if (Array.isArray(value)) {
+              value.forEach(file => form.append(key, file));
+            } else {
+              form.append(key, value as any);
+            }
+          } else {
+            form.append(key, String(value));
+          }
+        }
+      });
+      try {
+        const res = await fetch('/api/products', { method: 'POST', body: form, credentials: 'include' });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) return { error: json?.error || res.statusText } as any;
+        return { data: json.data } as any;
+      } catch (error) {
+        return { error } as any;
+      }
+    },
+    getMe: () => request('/api/products/me')
   },
   upload: {
     image: async (file: File) => {

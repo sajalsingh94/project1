@@ -145,9 +145,9 @@ const AuthenticationUI: React.FC<AuthenticationUIProps> = ({ className = "" }) =
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link to="/become-seller" className="flex items-center">
+            <Link to="/seller/dashboard" className="flex items-center">
               <Package className="mr-2 h-4 w-4" />
-              Become a Seller
+              Seller Dashboard
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />

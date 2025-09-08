@@ -155,6 +155,19 @@ const Header: React.FC = () => {
 
             {/* Authentication UI */}
             {!isLoading && <AuthenticationUI className="hidden md:flex" />}
+            
+            {/* Become a Seller Button - Show only for non-logged in users */}
+            {!user && !isLoading && (
+              <Link to="/register?mode=signup&role=seller">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="hidden md:flex border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
+                >
+                  Become a Seller
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile Menu Toggle */}
             <Button

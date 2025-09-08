@@ -42,6 +42,7 @@ const App = () =>
               <Route path="/register" element={<AuthPage />} />
               <Route path="/become-seller" element={<BecomeSellerPage />} />
               <Route path="/seller/dashboard" element={<SellerDashboardPage />} />
+              <Route path="/seller/dashboard/:tab" element={<SellerDashboardPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
