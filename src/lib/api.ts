@@ -23,7 +23,7 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<{ dat
 
 export const api = {
   auth: {
-    register: (payload: { email: string; password: string; role?: string }) =>
+    register: (payload: { email: string; password: string; role?: string; firstName?: string; lastName?: string; phone?: string; address?: string }) =>
       request('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
     login: (payload: { email: string; password: string; role?: string }) =>
       request('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
