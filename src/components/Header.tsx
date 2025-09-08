@@ -83,46 +83,54 @@ const Header: React.FC = () => {
 
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50 border-b border-cream">
-      <div className="container mx-auto px-4 py-3">
+    <header className="glass-effect sticky top-0 z-50 border-b border-gray-200/50">
+      <div className="container-modern py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="Bihari Delicacies" className="w-12 h-12 rounded-lg" />
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="relative">
+              <img src="/logo.svg" alt="Bihari Delicacies" className="w-14 h-14 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-clay-red/20 to-turmeric-yellow/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
             <div className="hidden sm:block">
-              <h1 className="text-2xl font-playfair font-bold gradient-text">
+              <h1 className="text-3xl font-playfair font-bold gradient-text">
                 Bihari Delicacies
               </h1>
-              <p className="text-xs text-warm-gray">Authentic Flavors of Bihar</p>
+              <p className="text-sm text-warm-gray font-medium">Authentic Flavors of Bihar</p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-1">
             {navigationLinks.map((link) =>
             <Link
               key={link.name}
               to={link.path}
-              className={`font-inter font-medium transition-colors duration-200 hover:text-clay-red ${
-              link.active ? 'text-clay-red border-b-2 border-clay-red pb-1' : 'text-indigo'}`
-              }>
-
+              className={`relative font-poppins font-medium px-4 py-2 rounded-lg transition-all duration-300 ${
+              link.active 
+                ? 'text-white bg-gradient-to-r from-clay-red to-clay-red-dark shadow-lg' 
+                : 'text-indigo hover:text-clay-red hover:bg-clay-red/10'
+              }`}
+              >
                 {link.name}
+                {link.active && (
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-clay-red to-clay-red-dark opacity-90 -z-10"></div>
+                )}
               </Link>
             )}
           </nav>
 
           {/* Search Bar */}
           <div className="hidden lg:flex flex-1 max-w-md mx-8">
-            <form onSubmit={handleSearch} className="relative w-full">
+            <form onSubmit={handleSearch} className="relative w-full group">
               <Input
                 type="text"
                 placeholder="Search for authentic Bihari products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border-indigo-light focus:border-clay-red" />
+                className="pl-12 pr-4 py-3 w-full border-2 border-gray-200 focus:border-clay-red rounded-xl bg-white/80 backdrop-blur-sm shadow-lg focus:shadow-xl transition-all duration-300" />
 
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-warm-gray" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-warm-gray group-focus-within:text-clay-red transition-colors duration-300" />
             </form>
           </div>
 

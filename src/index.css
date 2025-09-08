@@ -1,31 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Bihari Delicacies Brand Colors */
-  --clay-red: #C44536;
-  --turmeric-yellow: #E4A853;
-  --indigo: #4C5B7C;
-  --leaf-green: #6B8E3D;
+  /* Modern Bihari Delicacies Brand Colors */
+  --clay-red: #E53E3E;
+  --clay-red-light: #FC8181;
+  --clay-red-dark: #C53030;
+  --turmeric-yellow: #F6AD55;
+  --turmeric-yellow-light: #FBD38D;
+  --turmeric-yellow-dark: #ED8936;
+  --indigo: #4A5568;
+  --indigo-light: #718096;
+  --indigo-dark: #2D3748;
+  --leaf-green: #48BB78;
+  --leaf-green-light: #68D391;
+  --leaf-green-dark: #38A169;
   
-  /* Extended palette */
-  --clay-red-light: #D4635C;
-  --clay-red-dark: #A23D2F;
-  --turmeric-yellow-light: #E8B870;
-  --turmeric-yellow-dark: #D09638;
-  --indigo-light: #5A6A8B;
-  --indigo-dark: #3D486A;
-  --leaf-green-light: #7BA048;
-  --leaf-green-dark: #567432;
+  /* Modern neutral palette */
+  --warm-white: #FFFAF0;
+  --cream: #F7FAFC;
+  --warm-gray: #718096;
+  --dark-brown: #2D3748;
   
-  /* Neutral colors */
-  --warm-white: #FDF8F3;
-  --cream: #F5F1EB;
-  --warm-gray: #8B7355;
-  --dark-brown: #3D2914;
+  /* Modern gradients */
+  --gradient-primary: linear-gradient(135deg, #E53E3E 0%, #F6AD55 100%);
+  --gradient-secondary: linear-gradient(135deg, #4A5568 0%, #718096 100%);
+  --gradient-accent: linear-gradient(135deg, #48BB78 0%, #68D391 100%);
   
   --background: 0 0% 100%;
   --foreground: 0 0% 3.9%;
@@ -69,13 +72,15 @@
   }
   
   body {
-    @apply bg-background text-foreground font-inter;
-    background: linear-gradient(135deg, #FDF8F3 0%, #F5F1EB 100%);
+    @apply bg-background text-foreground font-poppins;
+    background: linear-gradient(135deg, #FFFAF0 0%, #F7FAFC 100%);
     min-height: 100vh;
+    line-height: 1.6;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-playfair;
+    line-height: 1.2;
   }
   
   .font-playfair {
@@ -85,34 +90,83 @@
   .font-inter {
     font-family: 'Inter', sans-serif;
   }
+  
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--clay-red);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--clay-red-dark);
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-clay-red hover:bg-clay-red-dark text-white font-semibold px-6 py-2 rounded-lg transition-colors duration-200;
+    @apply bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
   }
   
   .btn-secondary {
-    @apply bg-turmeric-yellow hover:bg-turmeric-yellow-dark text-dark-brown font-semibold px-6 py-2 rounded-lg transition-colors duration-200;
+    @apply bg-gradient-to-r from-turmeric-yellow to-turmeric-yellow-dark hover:from-turmeric-yellow-dark hover:to-turmeric-yellow text-dark-brown font-semibold px-8 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
   }
   
   .btn-outline {
-    @apply border-2 border-indigo text-indigo hover:bg-indigo hover:text-white font-semibold px-6 py-2 rounded-lg transition-all duration-200;
+    @apply border-2 border-indigo text-indigo hover:bg-indigo hover:text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
   }
   
-  .card-shadow {
-    box-shadow: 0 4px 6px -1px rgba(196, 69, 54, 0.1), 0 2px 4px -1px rgba(196, 69, 54, 0.06);
+  .btn-ghost {
+    @apply text-indigo hover:bg-indigo hover:text-white font-medium px-6 py-2 rounded-lg transition-all duration-200;
+  }
+  
+  .card-modern {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1;
   }
   
   .card-hover {
-    @apply transform hover:scale-105 transition-all duration-300 hover:shadow-lg;
+    @apply transform hover:scale-105 transition-all duration-300 hover:shadow-xl;
   }
   
   .gradient-text {
-    background: linear-gradient(135deg, #C44536 0%, #E4A853 100%);
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  
+  .gradient-bg {
+    background: var(--gradient-primary);
+  }
+  
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .container-modern {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   
   .bg-clay-red { background-color: var(--clay-red); }
