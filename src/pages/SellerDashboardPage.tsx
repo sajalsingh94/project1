@@ -1,11 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api';
-import { useMutation } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
+import { 
+  Store, 
+  Package, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Upload, 
+  User, 
+  MapPin, 
+  Phone, 
+  Mail,
+  Star,
+  Eye,
+  ShoppingCart
+} from 'lucide-react';
+
+interface SellerProfile {
+  _id?: string;
+  id?: string;
+  businessName?: string;
+  business_name?: string;
+  ownerName?: string;
+  owner_name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  description?: string;
+  profileImagePath?: string;
+  profile_image_path?: string;
+  bannerImagePath?: string;
+  banner_image_path?: string;
+  isVerified?: boolean;
+  is_verified?: boolean;
+  rating?: number;
+  totalReviews?: number;
+  total_reviews?: number;
+  createdAt?: string;
+  created_at?: string;
+}
+
+interface Product {
+  _id?: string;
+  id?: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  originalPrice?: number;
+  original_price?: number;
+  weight?: string;
+  ingredients?: string;
+  shelfLife?: string;
+  shelf_life?: string;
+  stockQuantity?: number;
+  stock_quantity?: number;
+  mainImagePath?: string;
+  main_image?: string;
+  additionalImages?: string[];
+  additional_images?: string[];
+  isActive?: boolean;
+  is_active?: boolean;
+  createdAt?: string;
+  created_at?: string;
+}
 
 const SellerDashboardPage: React.FC = () => {
-  const [seller, setSeller] = useState({
-    business_name: '',
-    owner_name: '',
+  const [activeTab, setActiveTab] = useState('profile');
+  const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Seller profile form state
+  const [profileForm, setProfileForm] = useState({
+    businessName: '',
+    ownerName: '',
     email: '',
     phone: '',
     address: '',
@@ -16,98 +100,631 @@ const SellerDashboardPage: React.FC = () => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [bannerImage, setBannerImage] = useState<File | null>(null);
 
-  const [product, setProduct] = useState({
+  // Product form state
+  const [productForm, setProductForm] = useState({
     name: '',
     description: '',
     price: '',
+    originalPrice: '',
     weight: '',
-    ingredients: ''
+    ingredients: '',
+    shelfLife: '',
+    stockQuantity: '',
+    categoryId: '1',
+    spiceLevelId: '1'
   });
-  const [productImage, setProductImage] = useState<File | null>(null);
-  const [productImageUrl, setProductImageUrl] = useState<string>('');
+  const [mainImage, setMainImage] = useState<File | null>(null);
+  const [additionalImages, setAdditionalImages] = useState<File[]>([]);
 
-  const createSeller = useMutation({
-    mutationFn: async () => {
-      return api.sellers.create({
-        ...seller,
-        profile_image: profileImage || undefined,
-        banner_image: bannerImage || undefined
+  useEffect(() => {
+    loadSellerData();
+  }, []);
+
+  const loadSellerData = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Load seller profile
+      const { data: sellerData, error: sellerError } = await api.sellers.getMe();
+      if (sellerError) {
+        if (sellerError.includes('not found')) {
+          // Seller profile doesn't exist yet
+          setSellerProfile(null);
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to load seller profile",
+            variant: "destructive"
+          });
+        }
+      } else {
+        setSellerProfile(sellerData);
+        setProfileForm({
+          businessName: sellerData.businessName || sellerData.business_name || '',
+          ownerName: sellerData.ownerName || sellerData.owner_name || '',
+          email: sellerData.email || '',
+          phone: sellerData.phone || '',
+          address: sellerData.address || '',
+          city: sellerData.city || '',
+          state: sellerData.state || '',
+          description: sellerData.description || ''
+        });
+      }
+
+      // Load products
+      const { data: productsData, error: productsError } = await api.products.getMe();
+      if (productsError) {
+        console.error('Failed to load products:', productsError);
+      } else {
+        setProducts(productsData || []);
+      }
+    } catch (error) {
+      console.error('Error loading seller data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load seller data",
+        variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
-  });
-
-  const uploadProductImage = useMutation({
-    mutationFn: async () => {
-      if (!productImage) return { error: 'No image' } as any;
-      return api.upload.image(productImage);
-    },
-    onSuccess: (res: any) => {
-      if (res?.data?.url) setProductImageUrl(res.data.url);
-    }
-  });
-
-  const onSubmitSeller = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await createSeller.mutateAsync();
   };
 
-  const onSubmitProduct = async (e: React.FormEvent) => {
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (productImage && !productImageUrl) {
-      const { error } = await uploadProductImage.mutateAsync() as any;
-      if (error) return;
+    setIsSubmitting(true);
+
+    try {
+      const payload: any = { ...profileForm };
+      if (profileImage) payload.profile_image = profileImage;
+      if (bannerImage) payload.banner_image = bannerImage;
+
+      const { data, error } = await api.sellers.create(payload);
+      if (error) {
+        toast({
+          title: "Error",
+          description: error,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Seller profile created successfully!"
+        });
+        setSellerProfile(data);
+        setActiveTab('products');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create seller profile",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    alert('Product saved locally. Hook to API as needed.');
   };
+
+  const handleProductSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const payload: any = { ...productForm };
+      if (mainImage) payload.main_image = mainImage;
+      if (additionalImages.length > 0) payload.additional_images = additionalImages;
+
+      const { data, error } = await api.products.create(payload);
+      if (error) {
+        toast({
+          title: "Error",
+          description: error,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Product created successfully!"
+        });
+        setProducts(prev => [...prev, data]);
+        // Reset form
+        setProductForm({
+          name: '',
+          description: '',
+          price: '',
+          originalPrice: '',
+          weight: '',
+          ingredients: '',
+          shelfLife: '',
+          stockQuantity: '',
+          categoryId: '1',
+          spiceLevelId: '1'
+        });
+        setMainImage(null);
+        setAdditionalImages([]);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create product",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Seller Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <form onSubmit={onSubmitSeller} className="space-y-3">
-          <h2 className="text-xl font-semibold">Seller Details</h2>
-          <input className="border p-2 w-full" placeholder="Business name" value={seller.business_name} onChange={e=>setSeller(s=>({...s,business_name:e.target.value}))} />
-          <input className="border p-2 w-full" placeholder="Owner name" value={seller.owner_name} onChange={e=>setSeller(s=>({...s,owner_name:e.target.value}))} />
-          <input className="border p-2 w-full" placeholder="Email" value={seller.email} onChange={e=>setSeller(s=>({...s,email:e.target.value}))} />
-          <input className="border p-2 w-full" placeholder="Phone" value={seller.phone} onChange={e=>setSeller(s=>({...s,phone:e.target.value}))} />
-          <input className="border p-2 w-full" placeholder="Address" value={seller.address} onChange={e=>setSeller(s=>({...s,address:e.target.value}))} />
-          <div className="grid grid-cols-2 gap-2">
-            <input className="border p-2 w-full" placeholder="City" value={seller.city} onChange={e=>setSeller(s=>({...s,city:e.target.value}))} />
-            <input className="border p-2 w-full" placeholder="State" value={seller.state} onChange={e=>setSeller(s=>({...s,state:e.target.value}))} />
-          </div>
-          <textarea className="border p-2 w-full" placeholder="Description" value={seller.description} onChange={e=>setSeller(s=>({...s,description:e.target.value}))} />
-          <div className="grid grid-cols-2 gap-2">
-            <input type="file" accept="image/*" onChange={e=>setProfileImage(e.target.files?.[0] || null)} />
-            <input type="file" accept="image/*" onChange={e=>setBannerImage(e.target.files?.[0] || null)} />
-          </div>
-          <button className="bg-black text-white px-4 py-2" type="submit" disabled={createSeller.isPending}>
-            {createSeller.isPending ? 'Saving...' : 'Save Seller'}
-          </button>
-          {createSeller.data?.error && <p className="text-red-600">{String(createSeller.data.error)}</p>}
-        </form>
-
-        <form onSubmit={onSubmitProduct} className="space-y-3">
-          <h2 className="text-xl font-semibold">Product Details</h2>
-          <input className="border p-2 w-full" placeholder="Name" value={product.name} onChange={e=>setProduct(s=>({...s,name:e.target.value}))} />
-          <textarea className="border p-2 w-full" placeholder="Description" value={product.description} onChange={e=>setProduct(s=>({...s,description:e.target.value}))} />
-          <div className="grid grid-cols-2 gap-2">
-            <input className="border p-2 w-full" placeholder="Price" value={product.price} onChange={e=>setProduct(s=>({...s,price:e.target.value}))} />
-            <input className="border p-2 w-full" placeholder="Weight" value={product.weight} onChange={e=>setProduct(s=>({...s,weight:e.target.value}))} />
-          </div>
-          <textarea className="border p-2 w-full" placeholder="Ingredients" value={product.ingredients} onChange={e=>setProduct(s=>({...s,ingredients:e.target.value}))} />
-          <input type="file" accept="image/*" onChange={e=>setProductImage(e.target.files?.[0] || null)} />
-          <div className="flex items-center gap-2">
-            <button className="bg-gray-800 text-white px-3 py-1" type="button" onClick={()=>uploadProductImage.mutate()} disabled={uploadProductImage.isPending || !productImage}>
-              {uploadProductImage.isPending ? 'Uploading...' : 'Upload Image'}
-            </button>
-            {productImageUrl && <span className="text-sm">Uploaded: {productImageUrl}</span>}
-          </div>
-          <button className="bg-black text-white px-4 py-2" type="submit">Save Product</button>
-        </form>
+    <div className="container mx-auto p-4 max-w-6xl">
+      <Helmet>
+        <title>Seller Dashboard | Bihari Delicacies</title>
+      </Helmet>
+      
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Seller Dashboard</h1>
+        <p className="text-gray-600">Manage your shop and products</p>
       </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="profile" className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="products" className="flex items-center gap-2">
+            <Package className="w-4 h-4" />
+            Products
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <Eye className="w-4 h-4" />
+            Analytics
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-6">
+          {!sellerProfile ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Store className="w-5 h-5" />
+                  Create Seller Profile
+                </CardTitle>
+                <CardDescription>
+                  Set up your seller profile to start selling on our platform
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleProfileSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="businessName">Business Name *</Label>
+                      <Input
+                        id="businessName"
+                        value={profileForm.businessName}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, businessName: e.target.value }))}
+                        placeholder="Mithaiwala Sweets"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="ownerName">Owner Name *</Label>
+                      <Input
+                        id="ownerName"
+                        value={profileForm.ownerName}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, ownerName: e.target.value }))}
+                        placeholder="Ram Prasad Gupta"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                        placeholder="owner@example.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        value={profileForm.phone}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, phone: e.target.value }))}
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="address">Address</Label>
+                      <Input
+                        id="address"
+                        value={profileForm.address}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, address: e.target.value }))}
+                        placeholder="Street, City, State"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        value={profileForm.city}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, city: e.target.value }))}
+                        placeholder="Patna"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Input
+                        id="state"
+                        value={profileForm.state}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, state: e.target.value }))}
+                        placeholder="Bihar"
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea
+                        id="description"
+                        value={profileForm.description}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Family business serving authentic sweets since 1950"
+                        rows={3}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="profileImage">Profile Image</Label>
+                      <Input
+                        id="profileImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setProfileImage(e.target.files?.[0] || null)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="bannerImage">Banner Image</Label>
+                      <Input
+                        id="bannerImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setBannerImage(e.target.files?.[0] || null)}
+                      />
+                    </div>
+                  </div>
+                  <Button type="submit" disabled={isSubmitting} className="w-full">
+                    {isSubmitting ? 'Creating Profile...' : 'Create Seller Profile'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Store className="w-5 h-5" />
+                      {sellerProfile.businessName || sellerProfile.business_name}
+                    </CardTitle>
+                    <CardDescription>
+                      {sellerProfile.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm">{sellerProfile.ownerName || sellerProfile.owner_name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm">{sellerProfile.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm">{sellerProfile.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm">{sellerProfile.city}, {sellerProfile.state}</span>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-yellow-500" />
+                        <span className="text-sm font-medium">
+                          {sellerProfile.rating || 0}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          ({sellerProfile.totalReviews || sellerProfile.total_reviews || 0} reviews)
+                        </span>
+                      </div>
+                      <Badge variant={sellerProfile.isVerified || sellerProfile.is_verified ? "default" : "secondary"}>
+                        {sellerProfile.isVerified || sellerProfile.is_verified ? "Verified" : "Pending Verification"}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              <div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Quick Stats</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Total Products</span>
+                      <span className="font-semibold">{products.length}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Active Products</span>
+                      <span className="font-semibold">
+                        {products.filter(p => p.isActive !== false && p.is_active !== false).length}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Total Stock</span>
+                      <span className="font-semibold">
+                        {products.reduce((sum, p) => sum + (p.stockQuantity || p.stock_quantity || 0), 0)}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="products" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold">Products</h2>
+            <Button onClick={() => setActiveTab('add-product')} className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Add Product
+            </Button>
+          </div>
+
+          {products.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Package className="w-12 h-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No products yet</h3>
+                <p className="text-gray-600 text-center mb-4">
+                  Start by adding your first product to begin selling
+                </p>
+                <Button onClick={() => setActiveTab('add-product')} className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Add Your First Product
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((product) => (
+                <Card key={product._id || product.id} className="overflow-hidden">
+                  <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                    {product.mainImagePath || product.main_image ? (
+                      <img
+                        src={product.mainImagePath || product.main_image}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Package className="w-12 h-12 text-gray-400" />
+                    )}
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-lg font-bold text-orange-600">
+                        ₹{product.price}
+                      </span>
+                      {product.originalPrice || product.original_price ? (
+                        <span className="text-sm text-gray-500 line-through">
+                          ₹{product.originalPrice || product.original_price}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                      <span>Stock: {product.stockQuantity || product.stock_quantity || 0}</span>
+                      <span>{product.weight}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" className="flex-1">
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="add-product" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Plus className="w-5 h-5" />
+                Add New Product
+              </CardTitle>
+              <CardDescription>
+                Add a new product to your inventory
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleProductSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="productName">Product Name *</Label>
+                    <Input
+                      id="productName"
+                      value={productForm.name}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Authentic Silao Khaja"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="productDescription">Description</Label>
+                    <Textarea
+                      id="productDescription"
+                      value={productForm.description}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Traditional layered sweet from Silao"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="price">Price (₹) *</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      value={productForm.price}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, price: e.target.value }))}
+                      placeholder="350"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="originalPrice">Original Price (₹)</Label>
+                    <Input
+                      id="originalPrice"
+                      type="number"
+                      value={productForm.originalPrice}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, originalPrice: e.target.value }))}
+                      placeholder="400"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="weight">Weight</Label>
+                    <Input
+                      id="weight"
+                      value={productForm.weight}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, weight: e.target.value }))}
+                      placeholder="500g"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="stockQuantity">Stock Quantity</Label>
+                    <Input
+                      id="stockQuantity"
+                      type="number"
+                      value={productForm.stockQuantity}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, stockQuantity: e.target.value }))}
+                      placeholder="25"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="shelfLife">Shelf Life</Label>
+                    <Input
+                      id="shelfLife"
+                      value={productForm.shelfLife}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, shelfLife: e.target.value }))}
+                      placeholder="15 days"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="categoryId">Category</Label>
+                    <Input
+                      id="categoryId"
+                      type="number"
+                      value={productForm.categoryId}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, categoryId: e.target.value }))}
+                      placeholder="1"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="ingredients">Ingredients</Label>
+                    <Textarea
+                      id="ingredients"
+                      value={productForm.ingredients}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, ingredients: e.target.value }))}
+                      placeholder="Refined flour, Pure ghee, Sugar, Cardamom"
+                      rows={2}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="mainImage">Main Image *</Label>
+                    <Input
+                      id="mainImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setMainImage(e.target.files?.[0] || null)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="additionalImages">Additional Images</Label>
+                    <Input
+                      id="additionalImages"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => setAdditionalImages(Array.from(e.target.files || []))}
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <Button type="submit" disabled={isSubmitting} className="flex-1">
+                    {isSubmitting ? 'Creating Product...' : 'Create Product'}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setActiveTab('products')}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Analytics</CardTitle>
+              <CardDescription>Track your shop's performance</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-orange-600 mb-2">{products.length}</div>
+                  <div className="text-sm text-gray-600">Total Products</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-600 mb-2">
+                    {products.reduce((sum, p) => sum + (p.stockQuantity || p.stock_quantity || 0), 0)}
+                  </div>
+                  <div className="text-sm text-gray-600">Total Stock</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">
+                    ₹{products.reduce((sum, p) => sum + ((p.price || 0) * (p.stockQuantity || p.stock_quantity || 0)), 0)}
+                  </div>
+                  <div className="text-sm text-gray-600">Inventory Value</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
 
 export default SellerDashboardPage;
-
