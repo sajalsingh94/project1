@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import Database from 'better-sqlite3';
+import mongoose from 'mongoose';
 
 const __dirnameCurrent = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
@@ -22,6 +23,37 @@ const sessionIdToUserId = new Map();
 // Data directory utilities
 const dataDir = path.join(__dirnameCurrent, 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+
+// MongoDB (optional)
+let mongoConnected = false;
+let SellerModel = null;
+async function connectMongoIfConfigured() {
+  const uri = process.env.MONGODB_URI || '';
+  if (!uri) return;
+  try {
+    await mongoose.connect(uri, { dbName: process.env.MONGODB_DB || undefined });
+    mongoConnected = true;
+    const sellerSchema = new mongoose.Schema({
+      business_name: String,
+      owner_name: String,
+      email: String,
+      phone: String,
+      address: String,
+      city: String,
+      state: String,
+      description: String,
+      profile_image_path: String,
+      banner_image_path: String,
+      created_at: { type: Date, default: Date.now }
+    }, { timestamps: false });
+    SellerModel = mongoose.models.Seller || mongoose.model('Seller', sellerSchema);
+    console.log('[server] MongoDB connected');
+  } catch (err) {
+    console.warn('[server] MongoDB connection failed, will use fallback storage. Reason:', err?.message || err);
+  }
+}
+// Fire and forget; server continues to start
+connectMongoIfConfigured();
 
 // SQLite database setup (optional)
 const dbPath = path.join(dataDir, 'app.db');
@@ -240,12 +272,29 @@ app.get('/api/auth/me', (req, res) => {
 app.post('/api/sellers', upload.fields([
   { name: 'profile_image', maxCount: 1 },
   { name: 'banner_image', maxCount: 1 }
-]), (req, res) => {
+]), async (req, res) => {
   try {
     const body = req.body || {};
     const files = req.files || {};
     const profileImage = Array.isArray(files.profile_image) && files.profile_image[0] ? files.profile_image[0].filename : null;
     const bannerImage = Array.isArray(files.banner_image) && files.banner_image[0] ? files.banner_image[0].filename : null;
+
+    if (mongoConnected && SellerModel) {
+      const created = await SellerModel.create({
+        business_name: body.business_name || null,
+        owner_name: body.owner_name || null,
+        email: body.email || null,
+        phone: body.phone || null,
+        address: body.address || null,
+        city: body.city || null,
+        state: body.state || null,
+        description: body.description || null,
+        profile_image_path: profileImage ? `/api/uploads/${profileImage}` : null,
+        banner_image_path: bannerImage ? `/api/uploads/${bannerImage}` : null
+      });
+      res.json({ data: created });
+      return;
+    }
 
     if (db) {
       const insert = db.prepare(`
