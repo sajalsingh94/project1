@@ -34,5 +34,14 @@
     "Email": "proxytest@example.com",
     "Roles": "user",
     "password": "password123"
+  },
+  {
+    "ID": 5,
+    "Name": "Test Seller",
+    "FirstName": "Test",
+    "LastName": "Seller",
+    "Email": "seller@example.com",
+    "Roles": "seller",
+    "password": "password123"
   }
 ]

@@ -141,8 +141,12 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
           description: "Your account has been created successfully!"
         });
       }
+      // Redirect based on user role after successful authentication
       if (mode === 'signup' && role === 'seller') {
         navigate('/seller/dashboard');
+      } else if (mode === 'login') {
+        // For login, we'll let RoleBasedRedirect handle the routing
+        navigate('/');
       } else {
         navigate('/');
       }
