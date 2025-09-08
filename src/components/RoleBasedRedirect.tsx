@@ -14,6 +14,16 @@ const RoleBasedRedirect: React.FC<RoleBasedRedirectProps> = ({ children }) => {
     checkAuth();
   }, []);
 
+  // Listen for auth state changes
+  useEffect(() => {
+    const handleAuthStateChange = () => {
+      checkAuth();
+    };
+
+    window.addEventListener('authStateChanged', handleAuthStateChange);
+    return () => window.removeEventListener('authStateChanged', handleAuthStateChange);
+  }, []);
+
   const checkAuth = async () => {
     try {
       const { data, error } = await window.ezsite.apis.getUserInfo();

@@ -125,6 +125,19 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
           title: "Login Successful",
           description: "Welcome back!"
         });
+        
+        // Trigger auth state refresh across the app
+        window.dispatchEvent(new CustomEvent('authStateChanged'));
+        
+        // Small delay to ensure auth state is updated
+        setTimeout(() => {
+          if (role === 'seller') {
+            navigate('/seller/dashboard');
+          } else {
+            navigate('/');
+          }
+        }, 100);
+        return;
       } else {
         const payload = { email, password, role, firstName, lastName, phone, address } as any;
         const { error } = await window.ezsite?.apis?.register(payload);
@@ -140,15 +153,13 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
           title: "Account Created",
           description: "Your account has been created successfully!"
         });
-      }
-      // Redirect based on user role after successful authentication
-      if (mode === 'signup' && role === 'seller') {
-        navigate('/seller/dashboard');
-      } else if (mode === 'login') {
-        // For login, we'll let RoleBasedRedirect handle the routing
-        navigate('/');
-      } else {
-        navigate('/');
+        
+        // Redirect based on user role after successful registration
+        if (role === 'seller') {
+          navigate('/seller/dashboard');
+        } else {
+          navigate('/');
+        }
       }
     } catch (err) {
       console.error('Auth error', err);

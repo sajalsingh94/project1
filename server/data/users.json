@@ -43,5 +43,16 @@
     "Email": "seller@example.com",
     "Roles": "seller",
     "password": "password123"
+  },
+  {
+    "ID": 6,
+    "Name": "Test Seller",
+    "FirstName": "Test",
+    "LastName": "Seller",
+    "Phone": "+91 9876543210",
+    "Address": "Test Address, Test City",
+    "Email": "test-seller@example.com",
+    "Roles": "seller",
+    "password": "password123"
   }
 ]
