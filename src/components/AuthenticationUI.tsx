@@ -98,14 +98,14 @@ const AuthenticationUI: React.FC<AuthenticationUIProps> = ({ className = "" }) =
   if (!isLoggedIn) {
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
-        <Link to="/login?mode=login">
-          <Button variant="ghost" size="sm" className="text-gray-700 hover:text-orange-600">
+        <Link to="/login">
+          <Button variant="ghost" size="sm" className="text-gray-700 hover:text-clay-red">
             <LogIn className="w-4 h-4 mr-1" />
             Login
           </Button>
         </Link>
-        <Link to="/register?mode=signup">
-          <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+        <Link to="/register">
+          <Button size="sm" className="bg-clay-red hover:bg-clay-red-dark text-white">
             <UserPlus className="w-4 h-4 mr-1" />
             Sign Up
           </Button>

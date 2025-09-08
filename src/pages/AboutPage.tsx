@@ -38,22 +38,10 @@ export default function AboutPage() {
 
   const team = [
   {
-    name: "Priya Sharma",
+    name: "Sajal Singh",
     role: "Founder & CEO",
-    image: "https://images.unsplash.com/photo-1742234857006-ceaba909665c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3MTg3MTl8MHwxfHNlYXJjaHwxfHxBJTIwY3JvcHBlZCUyMGltYWdlJTIwb2YlMjBhJTIwcGVyc29uJTJDJTIwZm9jdXNpbmclMjBvbiUyMHRoZSUyMGZhY2UlMkMlMjB3aXRoJTIwYSUyMHJlc29sdXRpb24lMjBvZiUyMDIwMHgyMDAlMjBwaXhlbHMufGVufDB8fHx8MTc1NjkxNzc1MHww&ixlib=rb-4.1.0&q=80&w=200$w=200",
-    bio: "Born in Patna, Priya is passionate about preserving Bihar's culinary heritage and supporting local artisans."
-  },
-  {
-    name: "Rajesh Kumar",
-    role: "Head of Operations",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
-    bio: "With 10+ years in food industry, Rajesh ensures quality and authenticity in every product we curate."
-  },
-  {
-    name: "Sunita Devi",
-    role: "Recipe Curator",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
-    bio: "A traditional cook from Muzaffarpur, Sunita helps preserve authentic Bihari recipes for future generations."
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+    bio: "Born in Patna, Sajal is passionate about preserving Bihar's culinary heritage and supporting local artisans."
   }];
 
 
