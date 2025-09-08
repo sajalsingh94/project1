@@ -45,6 +45,32 @@ const AuthenticationUI: React.FC<AuthenticationUIProps> = ({ className = "" }) =
     }
   };
 
+  // Expose refresh function to parent components
+  const refreshAuthStatus = async () => {
+    await checkAuthStatus();
+  };
+
+  // Listen for storage events and custom auth events
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'authState') {
+        checkAuthStatus();
+      }
+    };
+
+    const handleAuthStateChange = () => {
+      checkAuthStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('authStateChanged', handleAuthStateChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('authStateChanged', handleAuthStateChange);
+    };
+  }, []);
+
   const handleLogout = async () => {
     try {
       const { error } = await window.ezsite.apis.logout();

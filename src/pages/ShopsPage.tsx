@@ -12,7 +12,6 @@ import { Separator } from '@/components/ui/separator';
 import SEOHead from '@/components/SEOHead';
 import SellerCard from '@/components/SellerCard';
 import { useToast } from '@/hooks/use-toast';
-import { sampleSellers } from '@/utils/createSellerSamples';
 
 interface Seller {
   id: number;
@@ -80,30 +79,7 @@ const ShopsPage: React.FC = () => {
 
       if (response.error) throw response.error;
 
-      let sellersList = response.data.List;
-
-      // If no sellers in database, create sample data
-      if (sellersList.length === 0) {
-        // Create sample sellers
-        for (const sampleSeller of sampleSellers) {
-          const createResponse = await window.ezsite.apis.tableCreate(39101, sampleSeller);
-          if (createResponse.error) {
-            console.error('Error creating sample seller:', createResponse.error);
-          }
-        }
-
-        // Fetch again after creating samples
-        const secondResponse = await window.ezsite.apis.tablePage(39101, {
-          PageNo: 1,
-          PageSize: 50,
-          OrderByField: "rating",
-          IsAsc: false
-        });
-
-        if (!secondResponse.error) {
-          sellersList = secondResponse.data.List;
-        }
-      }
+      let sellersList = response.data.List || [];
 
       setSellers(sellersList);
     } catch (error) {
