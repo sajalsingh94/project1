@@ -53,7 +53,8 @@ if (typeof window !== 'undefined') {
   window.ezsite.apis = window.ezsite.apis || {};
   const apis = window.ezsite.apis;
 
-  apis.register = async ({ email, password, role }: any) => api.auth.register({ email, password, role });
+  apis.register = async ({ email, password, role, firstName, lastName, phone, address }: any) =>
+    api.auth.register({ email, password, role, firstName, lastName, phone, address });
   apis.login = async ({ email, password }: any) => api.auth.login({ email, password });
   apis.logout = async () => api.auth.logout();
   apis.getUserInfo = async () => api.auth.me();

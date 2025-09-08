@@ -30,7 +30,7 @@ export default function HomeBanner() {
           <button onClick={() => navigate('/recipes')} className="bg-white hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-lg text-lg font-semibold">
             Explore Recipes
           </button>
-          <button onClick={() => navigate('/register')} className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg text-lg font-semibold">
+          <button onClick={() => navigate('/register?mode=signup')} className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg text-lg font-semibold">
             Become a Seller
           </button>
         </div>

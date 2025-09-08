@@ -78,7 +78,7 @@ const AuthenticationUI: React.FC<AuthenticationUIProps> = ({ className = "" }) =
             Login
           </Button>
         </Link>
-        <Link to="/register">
+        <Link to="/register?mode=signup">
           <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
             <UserPlus className="w-4 h-4 mr-1" />
             Sign Up
