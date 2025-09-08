@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import BecomeSellerPage from "./pages/BecomeSellerPage";
+import SellerDashboardPage from "./pages/SellerDashboardPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +41,7 @@ const App = () =>
               <Route path="/login" element={<AuthPage />} />
               <Route path="/register" element={<AuthPage />} />
               <Route path="/become-seller" element={<BecomeSellerPage />} />
+              <Route path="/seller/dashboard" element={<SellerDashboardPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

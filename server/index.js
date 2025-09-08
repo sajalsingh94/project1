@@ -201,6 +201,19 @@ app.get('/api/health', (req, res) => {
 // Serve uploaded files
 app.use('/api/uploads', express.static(path.join(__dirnameCurrent, 'uploads')));
 
+// Generic image upload endpoint (for product images)
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+    const url = `/api/uploads/${file.filename}`;
+    res.json({ data: { url } });
+  } catch (error) {
+    console.error('Upload error', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
+});
+
 // Orders storage
 const ordersFile = 'orders.json';
 if (!fs.existsSync(path.join(dataDir, ordersFile))) writeJson(ordersFile, []);

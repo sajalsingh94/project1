@@ -52,6 +52,20 @@ export const api = {
       }
     }
   },
+  upload: {
+    image: async (file: File) => {
+      const form = new FormData();
+      form.append('image', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: form, credentials: 'include' });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) return { error: json?.error || res.statusText } as any;
+        return { data: json.data } as any;
+      } catch (error) {
+        return { error } as any;
+      }
+    }
+  },
   orders: {
     create: (payload: any) => request('/api/orders', { method: 'POST', body: JSON.stringify(payload) })
   },
