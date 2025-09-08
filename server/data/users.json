@@ -7,5 +7,41 @@
     "Email": "test@example.com",
     "Roles": "seller",
     "password": "password123"
+  },
+  {
+    "ID": 2,
+    "Name": "New User",
+    "FirstName": "New",
+    "LastName": "User",
+    "Email": "newuser@example.com",
+    "Roles": "user",
+    "password": "password123"
+  },
+  {
+    "ID": 3,
+    "Name": "Test User",
+    "FirstName": "Test",
+    "LastName": "User",
+    "Email": "testuser@example.com",
+    "Roles": "user",
+    "password": "password123"
+  },
+  {
+    "ID": 4,
+    "Name": "Proxy Test",
+    "FirstName": "Proxy",
+    "LastName": "Test",
+    "Email": "proxytest@example.com",
+    "Roles": "user",
+    "password": "password123"
+  },
+  {
+    "ID": 5,
+    "Name": "Test Seller",
+    "FirstName": "Test",
+    "LastName": "Seller",
+    "Email": "seller@example.com",
+    "Roles": "seller",
+    "password": "password123"
   }
 ]

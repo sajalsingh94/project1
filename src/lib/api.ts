@@ -118,7 +118,7 @@ if (typeof window !== 'undefined') {
   const apis = window.ezsite.apis;
 
   apis.register = async (payload: any) => api.auth.register(payload);
-  apis.login = async ({ email, password }: any) => api.auth.login({ email, password });
+  apis.login = async (payload: any) => api.auth.login(payload);
   apis.logout = async () => api.auth.logout();
   apis.getUserInfo = async () => api.auth.me();
 

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api';
 import { Helmet } from 'react-helmet-async';
@@ -24,8 +24,11 @@ import {
   Mail,
   Star,
   Eye,
-  ShoppingCart
+  ShoppingCart,
+  BarChart3,
+  Settings
 } from 'lucide-react';
+import SellerAnalytics from '@/components/SellerAnalytics';
 
 interface SellerProfile {
   _id?: string;
@@ -78,13 +81,21 @@ interface Product {
 }
 
 const SellerDashboardPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('profile');
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') || 'profile';
+  const [activeTab, setActiveTab] = useState(tabParam);
   const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Update active tab when URL changes
+  useEffect(() => {
+    const tabParam = searchParams.get('tab') || 'profile';
+    setActiveTab(tabParam);
+  }, [searchParams]);
 
   // Seller profile form state
   const [profileForm, setProfileForm] = useState({
@@ -265,18 +276,21 @@ const SellerDashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
+    <div className="max-w-6xl">
       <Helmet>
         <title>Seller Dashboard | Bihari Delicacies</title>
       </Helmet>
       
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Seller Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
         <p className="text-gray-600">Manage your shop and products</p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs value={activeTab} onValueChange={(value) => {
+        setActiveTab(value);
+        navigate(`/seller/dashboard?tab=${value}`);
+      }} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="w-4 h-4" />
             Profile
@@ -286,8 +300,12 @@ const SellerDashboardPage: React.FC = () => {
             Products
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <Eye className="w-4 h-4" />
+            <BarChart3 className="w-4 h-4" />
             Analytics
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="w-4 h-4" />
+            Settings
           </TabsTrigger>
         </TabsList>
 
@@ -695,29 +713,72 @@ const SellerDashboardPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
+          <SellerAnalytics sellerId={sellerProfile?._id || sellerProfile?.id} />
+        </TabsContent>
+
+        <TabsContent value="settings" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Analytics</CardTitle>
-              <CardDescription>Track your shop's performance</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                Account Settings
+              </CardTitle>
+              <CardDescription>Manage your account preferences and settings</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600 mb-2">{products.length}</div>
-                  <div className="text-sm text-gray-600">Total Products</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-2">
-                    {products.reduce((sum, p) => sum + (p.stockQuantity || p.stock_quantity || 0), 0)}
-                  </div>
-                  <div className="text-sm text-gray-600">Total Stock</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600 mb-2">
-                    ₹{products.reduce((sum, p) => sum + ((p.price || 0) * (p.stockQuantity || p.stock_quantity || 0)), 0)}
-                  </div>
-                  <div className="text-sm text-gray-600">Inventory Value</div>
-                </div>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Profile Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Email Notifications</span>
+                      <Badge variant="default">Enabled</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">SMS Notifications</span>
+                      <Badge variant="secondary">Disabled</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Auto-approve Orders</span>
+                      <Badge variant="default">Enabled</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Business Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Shop Status</span>
+                      <Badge variant="default">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Verification Status</span>
+                      <Badge variant={sellerProfile?.isVerified || sellerProfile?.is_verified ? "default" : "secondary"}>
+                        {sellerProfile?.isVerified || sellerProfile?.is_verified ? "Verified" : "Pending"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Commission Rate</span>
+                      <span className="text-sm font-medium">5%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="flex gap-4">
+                <Button variant="outline">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Update Settings
+                </Button>
+                <Button variant="outline" className="text-red-600 hover:text-red-700">
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Account
+                </Button>
               </div>
             </CardContent>
           </Card>

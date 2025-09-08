@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
+import { useToast } from '@/hooks/use-toast';
 
 const emailSchema = z.string().email();
 const passwordSchema = z.string().min(6);
@@ -82,6 +83,7 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
   const [address, setAddress] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const isValid = useMemo(() => {
     try {
@@ -99,30 +101,62 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid) return;
+    if (!isValid) {
+      toast({
+        title: "Validation Error",
+        description: "Please check your email format and ensure all required fields are filled.",
+        variant: "destructive"
+      });
+      return;
+    }
     setIsSubmitting(true);
     try {
       if (mode === 'login') {
-        if (window.ezsite?.apis?.login) {
-          await window.ezsite.apis.login({ email, password, role });
-        } else {
-          await window.ezsite?.apis?.auth?.login?.({ email, password, role });
+        const { error } = await window.ezsite?.apis?.login({ email, password, role });
+        if (error) {
+          toast({
+            title: "Login Failed",
+            description: error,
+            variant: "destructive"
+          });
+          return;
         }
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!"
+        });
       } else {
         const payload = { email, password, role, firstName, lastName, phone, address } as any;
-        if (window.ezsite?.apis?.register) {
-          await window.ezsite.apis.register(payload);
-        } else {
-          await window.ezsite?.apis?.auth?.register?.(payload);
+        const { error } = await window.ezsite?.apis?.register(payload);
+        if (error) {
+          toast({
+            title: "Registration Failed",
+            description: error,
+            variant: "destructive"
+          });
+          return;
         }
+        toast({
+          title: "Account Created",
+          description: "Your account has been created successfully!"
+        });
       }
+      // Redirect based on user role after successful authentication
       if (mode === 'signup' && role === 'seller') {
         navigate('/seller/dashboard');
+      } else if (mode === 'login') {
+        // For login, we'll let RoleBasedRedirect handle the routing
+        navigate('/');
       } else {
         navigate('/');
       }
     } catch (err) {
       console.error('Auth error', err);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -171,8 +205,13 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
         />
       </div>
       <Button type="submit" disabled={!isValid || isSubmitting} className="w-full">
-        {mode === 'login' ? 'Log in' : 'Create account'}
+        {isSubmitting ? 'Processing...' : (mode === 'login' ? 'Log in' : 'Create account')}
       </Button>
+      {!isValid && (
+        <p className="text-sm text-red-600 text-center">
+          Please enter a valid email address and ensure all required fields are filled.
+        </p>
+      )}
     </form>
   );
 };
