@@ -1,11 +1,13 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 
 export default function HomeBanner() {
+  const navigate = useNavigate();
   return (
     <div className="relative w-full h-[500px] overflow-hidden">
       {/* Background Image */}
       <img
-        src="/ChatGPT Image Sep 4, 2025, 08_46_30 PM.png"
+        src="/banner.png"
         alt="Homepage Banner"
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -22,13 +24,13 @@ export default function HomeBanner() {
           From local kitchens to your doorstep
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <button className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg text-lg font-semibold">
+          <button onClick={() => navigate('/shops')} className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg text-lg font-semibold">
             Shop Now →
           </button>
-          <button className="bg-white hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-lg text-lg font-semibold">
+          <button onClick={() => navigate('/recipes')} className="bg-white hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-lg text-lg font-semibold">
             Explore Recipes
           </button>
-          <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg text-lg font-semibold">
+          <button onClick={() => navigate('/register')} className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg text-lg font-semibold">
             Become a Seller
           </button>
         </div>

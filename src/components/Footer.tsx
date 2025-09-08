@@ -62,9 +62,7 @@ const Footer: React.FC = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-clay-red to-turmeric-yellow rounded-lg flex items-center justify-center">
-                <span className="text-white font-playfair font-bold text-xl">BD</span>
-              </div>
+              <img src="/logo.svg" alt="Bihari Delicacies" className="w-12 h-12 rounded-lg" />
               <div>
                 <h3 className="text-xl font-playfair font-bold">Bihari Delicacies</h3>
                 <p className="text-sm text-warm-gray">Authentic Flavors of Bihar</p>
