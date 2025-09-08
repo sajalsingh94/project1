@@ -15,8 +15,7 @@ import RecipesPage from "./pages/RecipesPage";
 import AboutPage from "./pages/AboutPage";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
-import LoginPage from "./pages/LoginPage";
-import SignUpPage from "./pages/SignUpPage";
+import AuthPage from "./pages/AuthPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import BecomeSellerPage from "./pages/BecomeSellerPage";
 import SellerDashboardPage from "./pages/SellerDashboardPage";
@@ -44,8 +43,8 @@ const App = () =>
                 <Route path="/seller/:sellerId" element={<SellerDetailPage />} />
                 <Route path="/recipes" element={<RecipesPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<SignUpPage />} />
+                <Route path="/login" element={<AuthPage />} />
+                <Route path="/register" element={<AuthPage />} />
                 <Route path="/become-seller" element={
                   <ProtectedRoute allowedRoles={['user']}>
                     <BecomeSellerPage />
