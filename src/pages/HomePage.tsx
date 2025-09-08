@@ -319,9 +319,20 @@ export default function HomePage() {
   };
 
   const handleAddToCart = async (productId: number) => {
-    // Mock implementation - replace with real cart logic
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log('Added to cart:', productId);
+    try {
+      const raw = localStorage.getItem('cartItems');
+      const cart = raw ? JSON.parse(raw) : [];
+      const idx = cart.findIndex((c: any) => c.productId === productId);
+      if (idx >= 0) {
+        cart[idx].quantity += 1;
+      } else {
+        cart.push({ productId, quantity: 1 });
+      }
+      localStorage.setItem('cartItems', JSON.stringify(cart));
+      console.log('Added to cart:', productId);
+    } catch (e) {
+      console.error('Cart error', e);
+    }
   };
 
   const handleToggleWishlist = async (productId: number) => {
