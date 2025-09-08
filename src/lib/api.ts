@@ -30,6 +30,28 @@ export const api = {
     logout: () => request('/api/auth/logout', { method: 'POST' }),
     me: () => request('/api/auth/me')
   },
+  sellers: {
+    create: async (payload: any) => {
+      const form = new FormData();
+      Object.entries(payload).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (key === 'profile_image' || key === 'banner_image') {
+            form.append(key, value as any);
+          } else {
+            form.append(key, String(value));
+          }
+        }
+      });
+      try {
+        const res = await fetch('/api/sellers', { method: 'POST', body: form, credentials: 'include' });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) return { error: json?.error || res.statusText } as any;
+        return { data: json.data } as any;
+      } catch (error) {
+        return { error } as any;
+      }
+    }
+  },
   orders: {
     create: (payload: any) => request('/api/orders', { method: 'POST', body: JSON.stringify(payload) })
   },
@@ -53,7 +75,7 @@ if (typeof window !== 'undefined') {
   window.ezsite.apis = window.ezsite.apis || {};
   const apis = window.ezsite.apis;
 
-  apis.register = async ({ email, password, role }: any) => api.auth.register({ email, password, role });
+  apis.register = async (payload: any) => api.auth.register(payload);
   apis.login = async ({ email, password }: any) => api.auth.login({ email, password });
   apis.logout = async () => api.auth.logout();
   apis.getUserInfo = async () => api.auth.me();
