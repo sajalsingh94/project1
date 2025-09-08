@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
+import multer from 'multer';
+import Database from 'better-sqlite3';
 
 const __dirnameCurrent = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
@@ -20,6 +22,40 @@ const sessionIdToUserId = new Map();
 // Data directory utilities
 const dataDir = path.join(__dirnameCurrent, 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+
+// SQLite database setup
+const dbPath = path.join(dataDir, 'app.db');
+const db = new Database(dbPath);
+db.pragma('journal_mode = WAL');
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sellers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    business_name TEXT,
+    owner_name TEXT,
+    email TEXT,
+    phone TEXT,
+    address TEXT,
+    city TEXT,
+    state TEXT,
+    description TEXT,
+    profile_image_path TEXT,
+    banner_image_path TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+`);
+
+// File uploads setup
+const uploadDir = path.join(__dirnameCurrent, 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadDir),
+  filename: (_req, file, cb) => {
+    const safeOriginal = String(file.originalname).replace(/[^a-zA-Z0-9._-]/g, '_');
+    const ts = Date.now();
+    cb(null, `${ts}-${safeOriginal}`);
+  }
+});
+const upload = multer({ storage });
 
 const tableIdToFile = {
   39097: 'categories.json',
@@ -123,6 +159,9 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true });
 });
 
+// Serve uploaded files
+app.use('/api/uploads', express.static(path.join(__dirnameCurrent, 'uploads')));
+
 // Orders storage
 const ordersFile = 'orders.json';
 if (!fs.existsSync(path.join(dataDir, ordersFile))) writeJson(ordersFile, []);
@@ -188,6 +227,44 @@ app.get('/api/auth/me', (req, res) => {
   const user = currentUser(req);
   if (!user) return res.status(401).json({ error: 'Not authenticated' });
   res.json({ data: { ID: user.ID, Name: user.Name, Email: user.Email, Roles: user.Roles } });
+});
+
+// Sellers API
+app.post('/api/sellers', upload.fields([
+  { name: 'profile_image', maxCount: 1 },
+  { name: 'banner_image', maxCount: 1 }
+]), (req, res) => {
+  try {
+    const body = req.body || {};
+    const files = req.files || {};
+    const profileImage = Array.isArray(files.profile_image) && files.profile_image[0] ? files.profile_image[0].filename : null;
+    const bannerImage = Array.isArray(files.banner_image) && files.banner_image[0] ? files.banner_image[0].filename : null;
+
+    const insert = db.prepare(`
+      INSERT INTO sellers (
+        business_name, owner_name, email, phone, address, city, state, description,
+        profile_image_path, banner_image_path
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    const info = insert.run(
+      body.business_name || null,
+      body.owner_name || null,
+      body.email || null,
+      body.phone || null,
+      body.address || null,
+      body.city || null,
+      body.state || null,
+      body.description || null,
+      profileImage ? `/api/uploads/${profileImage}` : null,
+      bannerImage ? `/api/uploads/${bannerImage}` : null
+    );
+
+    const row = db.prepare('SELECT * FROM sellers WHERE id = ?').get(info.lastInsertRowid);
+    res.json({ data: row });
+  } catch (error) {
+    console.error('Create seller error', error);
+    res.status(500).json({ error: 'Failed to create seller' });
+  }
 });
 
 // Table helpers

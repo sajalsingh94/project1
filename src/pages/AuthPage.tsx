@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
 
@@ -179,7 +179,10 @@ const AuthForm: React.FC<{ mode: 'login' | 'signup'; role: RoleType }>
 
 const AuthPage: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const defaultTab = (searchParams.get('mode') as 'login' | 'signup') || 'login';
+  const location = useLocation();
+  const modeParam = (searchParams.get('mode') as 'login' | 'signup') || undefined;
+  const isRegisterPath = location.pathname.toLowerCase().includes('/register');
+  const defaultTab = modeParam || (isRegisterPath ? 'signup' : 'login');
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>(defaultTab);
   const [role, setRole] = useState<RoleType>('user');
 

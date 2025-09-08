@@ -238,7 +238,7 @@ const Header: React.FC = () => {
                   </div> :
 
             <>
-                    <Link to="/login">
+                    <Link to="/login?mode=login">
                       <Button
                   variant="outline"
                   className="w-full border-indigo text-indigo hover:bg-indigo hover:text-white"
@@ -247,7 +247,7 @@ const Header: React.FC = () => {
                         Login
                       </Button>
                     </Link>
-                    <Link to="/register">
+                    <Link to="/register?mode=signup">
                       <Button
                   className="w-full bg-clay-red hover:bg-clay-red-dark text-white"
                   onClick={() => setIsMenuOpen(false)}>
