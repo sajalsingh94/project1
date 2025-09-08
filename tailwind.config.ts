@@ -17,8 +17,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        'playfair': ['Playfair Display', 'serif'],
-        'inter': ['Inter', 'sans-serif']
+        'display': ['Playfair Display', 'serif'],
+        'primary': ['Inter', 'sans-serif'],
+        'mono': ['JetBrains Mono', 'monospace']
       },
       colors: {
         // Brand colors

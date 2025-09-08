@@ -1,75 +1,153 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
+import { ArrowRight, BookOpen, Store } from 'lucide-react';
+import AnimatedButton from './ui/AnimatedButton';
 
 export default function HomeBanner() {
   const navigate = useNavigate();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
-      {/* Background Image with Parallax Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-clay-red/20 via-turmeric-yellow/10 to-leaf-green/20"></div>
-      <img
+    <div className="relative w-full h-[80vh] min-h-[600px] overflow-hidden">
+      {/* Background with Glassmorphism */}
+      <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-amber-500/5 to-green-500/10"></div>
+      
+      {/* Background Image */}
+      <motion.img
         src="/banner.png"
         alt="Homepage Banner"
-        className="absolute inset-0 w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-[10s] ease-out"
+        className="absolute inset-0 w-full h-full object-cover"
+        initial={{ scale: 1.1 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 8, ease: "easeOut" }}
       />
 
-      {/* Modern gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+      {/* Modern gradient overlays */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
-      {/* Content overlay */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-5xl md:text-7xl font-playfair font-bold text-shadow leading-tight">
-              Authentic Bihari
-              <span className="block bg-gradient-to-r from-turmeric-yellow to-yellow-300 bg-clip-text text-transparent">
-                Snacks & Sweets
+      {/* Content */}
+      <motion.div
+        className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="max-w-5xl mx-auto space-y-12">
+          {/* Main Heading */}
+          <motion.div className="space-y-6" variants={itemVariants}>
+            <h1 className="text-6xl md:text-8xl font-display font-extrabold leading-tight">
+              <span className="block">Authentic</span>
+              <span className="block bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
+                Bihari Delicacies
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-200 font-poppins max-w-2xl mx-auto leading-relaxed">
-              From local kitchens to your doorstep - Experience the rich flavors of Bihar
+            <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed font-light">
+              From local kitchens to your doorstep - Experience the rich, authentic flavors of Bihar
             </p>
-          </div>
+          </motion.div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button 
-              onClick={() => navigate('/shops')} 
-              className="group bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red text-white px-8 py-4 rounded-2xl text-lg font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-2"
+          {/* Action Buttons */}
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+            variants={itemVariants}
+          >
+            <AnimatedButton
+              variant="primary"
+              size="lg"
+              onClick={() => navigate('/shops')}
+              icon={Store}
+              iconPosition="right"
+              className="min-w-[200px]"
             >
-              <span>Shop Now</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
+              Shop Now
+            </AnimatedButton>
             
-            <button 
-              onClick={() => navigate('/recipes')} 
-              className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/30 hover:border-white/50 px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-2"
+            <AnimatedButton
+              variant="outline"
+              size="lg"
+              onClick={() => navigate('/recipes')}
+              icon={BookOpen}
+              iconPosition="right"
+              className="min-w-[200px] bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:border-white/50"
             >
-              <span>Explore Recipes</span>
-              <svg className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-            </button>
+              Explore Recipes
+            </AnimatedButton>
             
-            <button 
-              onClick={() => navigate('/register')} 
-              className="group bg-gradient-to-r from-turmeric-yellow to-turmeric-yellow-dark hover:from-turmeric-yellow-dark hover:to-turmeric-yellow text-dark-brown px-8 py-4 rounded-2xl text-lg font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-2"
+            <AnimatedButton
+              variant="secondary"
+              size="lg"
+              onClick={() => navigate('/register')}
+              className="min-w-[200px] bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 hover:from-amber-500 hover:to-yellow-600"
             >
-              <span>Become a Seller</span>
-              <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-            </button>
-          </div>
+              Become a Seller
+            </AnimatedButton>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
       
-      {/* Decorative elements */}
-      <div className="absolute top-10 left-10 w-20 h-20 bg-turmeric-yellow/20 rounded-full blur-xl"></div>
-      <div className="absolute bottom-20 right-20 w-32 h-32 bg-clay-red/20 rounded-full blur-2xl"></div>
-      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-leaf-green/20 rounded-full blur-lg"></div>
+      {/* Floating Decorative Elements */}
+      <motion.div
+        className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-amber-400/20 to-yellow-500/20 rounded-full blur-3xl"
+        animate={{
+          y: [0, -20, 0],
+          x: [0, 10, 0],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      
+      <motion.div
+        className="absolute bottom-32 right-32 w-40 h-40 bg-gradient-to-br from-red-400/20 to-pink-500/20 rounded-full blur-3xl"
+        animate={{
+          y: [0, 20, 0],
+          x: [0, -10, 0],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      
+      <motion.div
+        className="absolute top-1/2 left-1/4 w-24 h-24 bg-gradient-to-br from-green-400/20 to-emerald-500/20 rounded-full blur-2xl"
+        animate={{
+          y: [0, -15, 0],
+          x: [0, 15, 0],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
     </div>
   );
 }
