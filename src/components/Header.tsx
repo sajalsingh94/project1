@@ -69,9 +69,7 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-clay-red to-turmeric-yellow rounded-lg flex items-center justify-center">
-              <span className="text-white font-playfair font-bold text-xl">BD</span>
-            </div>
+            <img src="/logo.svg" alt="Bihari Delicacies" className="w-12 h-12 rounded-lg" />
             <div className="hidden sm:block">
               <h1 className="text-2xl font-playfair font-bold gradient-text">
                 Bihari Delicacies
