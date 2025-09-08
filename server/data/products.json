@@ -1,0 +1,21 @@
+[
+  {
+    "id": 1,
+    "name": "Authentic Silao Khaja",
+    "description": "Traditional layered sweet from Silao",
+    "price": 350,
+    "original_price": 400,
+    "seller_id": 1,
+    "category_id": 1,
+    "spice_level_id": 1,
+    "weight": "500g",
+    "ingredients": "Refined flour, Pure ghee, Sugar, Cardamom",
+    "shelf_life": "15 days",
+    "stock_quantity": 25,
+    "rating": 4.8,
+    "review_count": 45,
+    "is_featured": true,
+    "is_bestseller": true,
+    "main_image": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=400&fit=crop"
+  }
+]
