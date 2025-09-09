@@ -8,16 +8,11 @@ import {
   User, 
   ShoppingCart, 
   Heart, 
-  Sun, 
-  Moon,
-  Home,
   Store,
   BookOpen,
   Info
 } from 'lucide-react';
-import { useTheme } from '@/contexts/ThemeContext';
 import AnimatedButton from './ui/AnimatedButton';
-import ThemeToggle from './ThemeToggle';
 
 interface UserInfo {
   ID: number;
@@ -28,7 +23,6 @@ interface UserInfo {
 
 const ModernHeader: React.FC = () => {
   const location = useLocation();
-  const { actualTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<UserInfo | null>(null);
@@ -37,7 +31,6 @@ const ModernHeader: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const navigationItems = [
-    { name: 'Home', path: '/', icon: Home },
     { name: 'Shops', path: '/shops', icon: Store },
     { name: 'Recipes', path: '/recipes', icon: BookOpen },
     { name: 'About', path: '/about', icon: Info },
@@ -103,7 +96,7 @@ const ModernHeader: React.FC = () => {
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-lg' 
+          ? 'bg-white/85 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-lg' 
           : 'bg-transparent'
       }`}
       initial={{ y: -100 }}
@@ -119,18 +112,18 @@ const ModernHeader: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+              <div className="w-12 h-12 bg-gradient-to-br from-clay-red to-clay-red-dark rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
                 <span className="text-white font-bold text-xl">B</span>
               </div>
               <motion.div
-                className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/20 to-amber-500/20"
+                className="absolute inset-0 rounded-2xl bg-gradient-to-br from-clay-red/20 to-clay-red-dark/20"
                 initial={{ opacity: 0 }}
                 whileHover={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               />
             </motion.div>
             <div className="hidden sm:block">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-clay-red to-clay-red-dark bg-clip-text text-transparent">
                 Bihari Delicacies
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">Authentic Flavors</p>
@@ -162,7 +155,7 @@ const ModernHeader: React.FC = () => {
                   
                   {isActive && (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-red-500 to-amber-500 rounded-xl shadow-lg"
+                      className="absolute inset-0 bg-gradient-to-r from-clay-red to-clay-red-dark rounded-xl shadow-lg"
                       layoutId="activeTab"
                       initial={false}
                       transition={{
@@ -189,7 +182,7 @@ const ModernHeader: React.FC = () => {
                   placeholder="Search authentic Bihari products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all duration-300"
+                  className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-clay-red/50 transition-all duration-300"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               </motion.div>
@@ -198,14 +191,11 @@ const ModernHeader: React.FC = () => {
 
           {/* User Actions */}
           <div className="flex items-center space-x-3">
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
             {/* Cart and Favorites */}
             {user && (
               <>
                 <motion.button
-                  className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-red-500 transition-colors duration-200"
+                  className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-clay-red transition-colors duration-200"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -214,14 +204,14 @@ const ModernHeader: React.FC = () => {
                 
                 <motion.button
                   onClick={() => (window.location.href = '/checkout')}
-                  className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-red-500 transition-colors duration-200"
+                  className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-clay-red transition-colors duration-200"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
                   <ShoppingCart className="w-6 h-6" />
                   {cartCount > 0 && (
                     <motion.span
-                      className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center"
+                      className="absolute -top-1 -right-1 bg-clay-red text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -253,7 +243,7 @@ const ModernHeader: React.FC = () => {
                 ) : (
                   <div className="flex items-center space-x-2">
                     <AnimatedButton
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
                       onClick={() => (window.location.href = '/login')}
                     >
@@ -323,7 +313,7 @@ const ModernHeader: React.FC = () => {
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-red/50 transition-all duration-300"
                   />
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 </div>
@@ -340,7 +330,7 @@ const ModernHeader: React.FC = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                         isActive
-                          ? 'bg-gradient-to-r from-red-500 to-amber-500 text-white shadow-lg'
+                          ? 'bg-gradient-to-r from-clay-red to-clay-red-dark text-white shadow-lg'
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                     >
