@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { api } from '@/lib/api';
 
 interface RoleBasedRedirectProps {
   children: React.ReactNode;
@@ -26,7 +27,10 @@ const RoleBasedRedirect: React.FC<RoleBasedRedirectProps> = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const { data, error } = await window.ezsite.apis.getUserInfo();
+      const getUserInfo = window.ezsite?.apis?.getUserInfo;
+      const { data, error } = getUserInfo
+        ? await getUserInfo()
+        : await api.auth.me();
       if (error || !data) {
         setUser(null);
       } else {

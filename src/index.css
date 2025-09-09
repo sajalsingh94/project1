@@ -6,22 +6,23 @@
 
 :root {
   /* Modern Bihari Delicacies Brand Colors */
-  --clay-red: #E53E3E;
-  --clay-red-light: #FC8181;
-  --clay-red-dark: #C53030;
-  --turmeric-yellow: #F6AD55;
-  --turmeric-yellow-light: #FBD38D;
-  --turmeric-yellow-dark: #ED8936;
-  --indigo: #4A5568;
-  --indigo-light: #718096;
-  --indigo-dark: #2D3748;
-  --leaf-green: #48BB78;
-  --leaf-green-light: #68D391;
-  --leaf-green-dark: #38A169;
+  /* Blue theme */
+  --clay-red: #2563EB; /* primary blue */
+  --clay-red-light: #60A5FA;
+  --clay-red-dark: #1E40AF;
+  --turmeric-yellow: #22D3EE; /* accent cyan */
+  --turmeric-yellow-light: #67E8F9;
+  --turmeric-yellow-dark: #0891B2;
+  --indigo: #334155; /* slate */
+  --indigo-light: #64748B;
+  --indigo-dark: #0F172A;
+  --leaf-green: #10B981; /* teal accent */
+  --leaf-green-light: #34D399;
+  --leaf-green-dark: #059669;
   
   /* Modern neutral palette */
-  --warm-white: #FFFAF0;
-  --cream: #F7FAFC;
+  --warm-white: #F8FAFF;
+  --cream: #EEF2FF;
   --warm-gray: #718096;
   --dark-brown: #2D3748;
   
@@ -72,8 +73,8 @@
   }
   
   body {
-    @apply bg-background text-foreground font-poppins;
-    background: linear-gradient(135deg, #FFFAF0 0%, #F7FAFC 100%);
+    @apply bg-background text-foreground font-inter;
+    background: linear-gradient(135deg, #F8FAFF 0%, #EEF2FF 100%);
     min-height: 100vh;
     line-height: 1.6;
   }
@@ -121,7 +122,7 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+    @apply bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
   }
   
   .btn-secondary {
@@ -129,7 +130,7 @@
   }
   
   .btn-outline {
-    @apply border-2 border-indigo text-indigo hover:bg-indigo hover:text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+    @apply border-2 border-clay-red text-clay-red hover:bg-clay-red hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
   }
   
   .btn-ghost {
