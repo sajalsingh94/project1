@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Lock, User as UserIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/safe-motion';
 
 const emailSchema = z.string().email();
 const passwordSchema = z.string().min(6);

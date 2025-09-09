@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, MotionProps } from 'framer-motion';
+import { motion, MotionProps } from '@/lib/safe-motion';
 
 interface AnimatedCardProps extends Omit<MotionProps, 'children'> {
   children: React.ReactNode;

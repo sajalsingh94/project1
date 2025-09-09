@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/safe-motion";
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, BookOpen, Store } from 'lucide-react';
 import AnimatedButton from './ui/AnimatedButton';
