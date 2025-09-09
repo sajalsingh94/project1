@@ -148,7 +148,7 @@ const SignUpPage: React.FC = () => {
         description: "Your account has been created successfully! Please log in to continue."
       });
       
-      navigate('/login?mode=login');
+      navigate('/login');
     } catch (err) {
       console.error('Registration error', err);
       toast({
@@ -330,7 +330,7 @@ const SignUpPage: React.FC = () => {
             <Button 
               type="submit" 
               disabled={!isValid || isSubmitting} 
-              className="w-full bg-clay-red hover:bg-clay-red-dark text-white h-12 text-lg font-semibold"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white h-12 text-lg font-semibold"
             >
               {isSubmitting ? 'Creating Account...' : 'Sign Up'}
             </Button>

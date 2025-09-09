@@ -4,12 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Mail, Lock, Eye, EyeOff, Facebook, Instagram } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowLeft, Mail, Lock, User, Facebook, Instagram } from 'lucide-react';
 
 const emailSchema = z.string().email();
 const passwordSchema = z.string().min(6);
@@ -70,7 +69,7 @@ const RoleToggle: React.FC<{ role: RoleType; onChange: (r: RoleType) => void }> 
         variant={role === 'user' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onChange('user')}
-        className={role === 'user' ? 'bg-clay-red hover:bg-clay-red-dark text-white' : ''}
+        className={role === 'user' ? 'bg-blue-500 hover:bg-blue-600 text-white' : ''}
       >
         User
       </Button>
@@ -79,7 +78,7 @@ const RoleToggle: React.FC<{ role: RoleType; onChange: (r: RoleType) => void }> 
         variant={role === 'seller' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onChange('seller')}
-        className={role === 'seller' ? 'bg-clay-red hover:bg-clay-red-dark text-white' : ''}
+        className={role === 'seller' ? 'bg-blue-500 hover:bg-blue-600 text-white' : ''}
       >
         Seller
       </Button>
@@ -90,13 +89,14 @@ const RoleToggle: React.FC<{ role: RoleType; onChange: (r: RoleType) => void }> 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<RoleType>('user');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const isValid = emailSchema.safeParse(email).success && passwordSchema.safeParse(password).success;
+  const isValid = 
+    emailSchema.safeParse(email).success && 
+    passwordSchema.safeParse(password).success;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,8 +124,10 @@ const LoginPage: React.FC = () => {
         description: "Welcome back!"
       });
       
+      // Trigger auth state refresh across the app
       window.dispatchEvent(new CustomEvent('authStateChanged'));
       
+      // Small delay to ensure auth state is updated
       setTimeout(() => {
         if (role === 'seller') {
           navigate('/seller/dashboard');
@@ -146,9 +148,9 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-warm-white to-cream flex">
+    <div className="min-h-screen bg-gradient-to-br from-warm-white to-cream flex relative">
       {/* Left Panel - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-8 relative z-10">
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
@@ -156,8 +158,8 @@ const LoginPage: React.FC = () => {
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </Link>
             <div className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-clay-red hover:text-clay-red-dark font-medium">
+              New to Bihari Delicacies?{' '}
+              <Link to="/register" className="text-blue-500 hover:text-blue-600 font-medium">
                 Sign up
               </Link>
             </div>
@@ -166,7 +168,7 @@ const LoginPage: React.FC = () => {
           {/* Title */}
           <div className="mb-8">
             <h1 className="text-3xl font-playfair font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to continue your culinary journey</p>
+            <p className="text-gray-600">Sign in to your account to continue.</p>
           </div>
 
           {/* Role Toggle */}
@@ -185,18 +187,9 @@ const LoginPage: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="Enter your email"
                   className="pl-10"
                 />
-                {email && emailSchema.safeParse(email).success && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -206,26 +199,24 @@ const LoginPage: React.FC = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="pl-10 pr-10"
+                  placeholder="Enter your password"
+                  className="pl-10"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+              </div>
+              <div className="text-right">
+                <Link to="/forgot-password" className="text-sm text-blue-500 hover:text-blue-600">
+                  Forgot password?
+                </Link>
               </div>
             </div>
 
             <Button 
               type="submit" 
               disabled={!isValid || isSubmitting} 
-              className="w-full bg-clay-red hover:bg-clay-red-dark text-white h-12 text-lg font-semibold"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white h-12 text-lg font-semibold"
             >
               {isSubmitting ? 'Signing In...' : 'Sign In'}
             </Button>
@@ -255,33 +246,33 @@ const LoginPage: React.FC = () => {
       </div>
 
       {/* Right Panel - Illustrative Elements */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-indigo via-indigo-dark to-clay-red relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 relative overflow-hidden z-0">
         {/* Abstract Background Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-32 h-32 bg-turmeric-yellow/20 rounded-full blur-xl"></div>
-          <div className="absolute bottom-32 right-16 w-48 h-48 bg-clay-red/20 rounded-full blur-xl"></div>
-          <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-leaf-green/20 rounded-full blur-xl"></div>
+          <div className="absolute top-20 left-20 w-32 h-32 bg-white/20 rounded-full blur-xl"></div>
+          <div className="absolute bottom-32 right-16 w-48 h-48 bg-white/10 rounded-full blur-xl"></div>
+          <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/15 rounded-full blur-xl"></div>
         </div>
 
         {/* Cards */}
         <div className="relative z-10 p-12 flex flex-col justify-center space-y-8">
-          {/* Inbox Card */}
+          {/* Welcome Card */}
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl max-w-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Inbox</h3>
-              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                45
+              <h3 className="text-lg font-semibold text-gray-900">Welcome Back</h3>
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                ✓
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">176,18</div>
-            <div className="w-full h-16 bg-gradient-to-r from-orange-400 to-blue-500 rounded-lg flex items-center justify-center">
-              <div className="text-white text-sm font-medium">Analytics Chart</div>
+            <div className="text-3xl font-bold text-gray-900 mb-2">Ready to Continue</div>
+            <div className="w-full h-16 bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg flex items-center justify-center">
+              <div className="text-white text-sm font-medium">Your Dashboard</div>
             </div>
           </div>
 
           {/* Social Icons */}
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
               <Instagram className="w-6 h-6 text-white" />
             </div>
             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
@@ -291,17 +282,17 @@ const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Data Security Card */}
+          {/* Security Card */}
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl max-w-sm">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center mb-3">
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mb-3">
                   <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Your data, your rules</h3>
-                <p className="text-sm text-gray-600">Your data belongs to you, and our encryption ensures that.</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Secure Login</h3>
+                <p className="text-sm text-gray-600">Your account is protected with industry-standard security.</p>
               </div>
             </div>
           </div>
