@@ -1,8 +1,8 @@
 # Database Setup Guide
 
-## ✅ Current Status: WORKING OUT OF THE BOX
+## ✅ Current Status: MONGODB ATLAS CONFIGURED
 
-Your application is configured to work immediately without any setup required. The server uses JSON file storage by default, which is perfect for development and testing.
+Your application is now configured with MongoDB Atlas and working perfectly! The server connects to your MongoDB Atlas cluster for data storage.
 
 ## How It Works
 
@@ -14,19 +14,20 @@ The application has a **smart fallback system**:
 ## Current Configuration
 
 The application is set up with:
-- **No MongoDB URI** = Uses JSON file storage (recommended for development)
+- **MongoDB Atlas** = Connected to your cloud database
 - **Port 3001** = Server runs on http://localhost:3001
-- **Data storage** = All data saved in `server/data/` directory
+- **Data storage** = All data saved to MongoDB Atlas cluster
+- **Database name** = `bihari_delicacies`
 
 ## Server Output
 
 When you run `pnpm run dev:server`, you'll see:
 ```
-[server] No MongoDB URI provided, using fallback storage
+[server] MongoDB connected successfully
 [server] API server listening on http://localhost:3001
 ```
 
-This is **normal and expected** - your app is working perfectly! This message indicates the app is using JSON file storage instead of MongoDB.
+This confirms that MongoDB Atlas is connected and working perfectly!
 
 ## Optional: Enable MongoDB
 
@@ -74,10 +75,10 @@ pnpm run dev:web     # Frontend development server
 
 ## Troubleshooting
 
-- **"MongoDB URI missing"**: This is normal! The app works without MongoDB using JSON file storage
+- **"MongoDB connection failed"**: Check your internet connection and MongoDB Atlas cluster status
 - **Server won't start**: Check if port 3001 is available
-- **Data not saving**: Check that `server/data/` directory is writable
+- **Data not saving**: Verify MongoDB Atlas connection and database permissions
 
 ## Summary
 
-**You don't need to do anything!** The application is configured to work out of the box with JSON file storage. MongoDB is completely optional and only needed if you want to scale to production with a proper database.
+**MongoDB Atlas is now configured and working!** Your application is connected to a cloud database and ready for production use. All data is automatically saved to your MongoDB Atlas cluster.
