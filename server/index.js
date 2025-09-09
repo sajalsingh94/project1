@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
-import Database from 'better-sqlite3';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
@@ -126,33 +125,6 @@ async function connectMongoIfConfigured() {
 // Fire and forget; server continues to start
 connectMongoIfConfigured();
 
-// SQLite database setup (optional)
-const dbPath = path.join(dataDir, 'app.db');
-let db = null;
-try {
-  db = new Database(dbPath);
-  db.pragma('journal_mode = WAL');
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS sellers (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      business_name TEXT,
-      owner_name TEXT,
-      email TEXT,
-      phone TEXT,
-      address TEXT,
-      city TEXT,
-      state TEXT,
-      description TEXT,
-      profile_image_path TEXT,
-      banner_image_path TEXT,
-      created_at TEXT DEFAULT (datetime('now'))
-    );
-  `);
-  console.log('[server] SQLite enabled at', dbPath);
-} catch (err) {
-  db = null;
-  console.warn('[server] SQLite unavailable, falling back to JSON storage. Reason:', err?.message || err);
-}
 
 // File uploads setup
 const uploadDir = path.join(__dirnameCurrent, 'uploads');
