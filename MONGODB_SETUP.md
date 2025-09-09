@@ -14,10 +14,11 @@ The application has a **smart fallback system**:
 
 ## Current Configuration
 
-The `.env` file is set up with:
+The application is set up with:
 - **No MongoDB URI** = Uses JSON file storage (recommended for development)
 - **Port 3001** = Server runs on http://localhost:3001
 - **Data storage** = All data saved in `server/data/` directory
+- **Environment file** = `.env` file created with default configuration
 
 ## Server Output
 
@@ -27,7 +28,7 @@ When you run `pnpm run dev:server`, you'll see:
 [server] API server listening on http://localhost:3001
 ```
 
-This is **normal and expected** - your app is working perfectly!
+This is **normal and expected** - your app is working perfectly! The `.env` file is now created, so you won't see any missing environment variable warnings.
 
 ## Optional: Enable MongoDB
 
@@ -47,6 +48,12 @@ If you want to use MongoDB instead of JSON files:
    ```
    MONGODB_URI=mongodb://localhost:27017/bihari_delicacies
    ```
+
+## Environment Files
+
+- **`.env`** - Your local environment configuration (created automatically)
+- **`.env.example`** - Template file showing all available options
+- **`.gitignore`** - Excludes `.env` from version control (for security)
 
 ## Data Storage Locations
 
