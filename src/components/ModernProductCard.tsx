@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/safe-motion';
 import { Heart, ShoppingCart, Star, Eye, Plus } from 'lucide-react';
 import AnimatedButton from './ui/AnimatedButton';
 import AnimatedCard from './ui/AnimatedCard';
