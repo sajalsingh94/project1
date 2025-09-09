@@ -5,31 +5,85 @@
 @tailwind utilities;
 
 :root {
-  /* Modern Bihari Delicacies Brand Colors */
-  /* Blue theme */
-  --clay-red: #2563EB; /* primary blue */
-  --clay-red-light: #60A5FA;
-  --clay-red-dark: #1E40AF;
-  --turmeric-yellow: #22D3EE; /* accent cyan */
-  --turmeric-yellow-light: #67E8F9;
-  --turmeric-yellow-dark: #0891B2;
-  --indigo: #334155; /* slate */
-  --indigo-light: #64748B;
-  --indigo-dark: #0F172A;
-  --leaf-green: #10B981; /* teal accent */
-  --leaf-green-light: #34D399;
-  --leaf-green-dark: #059669;
+  /* Enhanced Bihari Delicacies Brand Colors - Food-Inspired Palette */
+  /* Primary Colors - Warm & Appetizing */
+  --clay-red: #DC2626; /* Rich red - primary */
+  --clay-red-light: #F87171;
+  --clay-red-dark: #B91C1C;
+  --clay-red-50: #FEF2F2;
+  --clay-red-100: #FEE2E2;
+  --clay-red-500: #EF4444;
+  --clay-red-600: #DC2626;
+  --clay-red-700: #B91C1C;
+  --clay-red-800: #991B1B;
+  --clay-red-900: #7F1D1D;
   
-  /* Modern neutral palette */
-  --warm-white: #F8FAFF;
-  --cream: #EEF2FF;
-  --warm-gray: #718096;
-  --dark-brown: #2D3748;
+  /* Secondary Colors - Golden & Warm */
+  --turmeric-yellow: #F59E0B; /* Golden yellow */
+  --turmeric-yellow-light: #FCD34D;
+  --turmeric-yellow-dark: #D97706;
+  --turmeric-yellow-50: #FFFBEB;
+  --turmeric-yellow-100: #FEF3C7;
+  --turmeric-yellow-500: #F59E0B;
+  --turmeric-yellow-600: #D97706;
+  --turmeric-yellow-700: #B45309;
+  --turmeric-yellow-800: #92400E;
+  --turmeric-yellow-900: #78350F;
   
-  /* Modern gradients */
-  --gradient-primary: linear-gradient(135deg, #E53E3E 0%, #F6AD55 100%);
-  --gradient-secondary: linear-gradient(135deg, #4A5568 0%, #718096 100%);
-  --gradient-accent: linear-gradient(135deg, #48BB78 0%, #68D391 100%);
+  /* Accent Colors - Fresh & Natural */
+  --leaf-green: #059669; /* Fresh green */
+  --leaf-green-light: #10B981;
+  --leaf-green-dark: #047857;
+  --leaf-green-50: #ECFDF5;
+  --leaf-green-100: #D1FAE5;
+  --leaf-green-500: #10B981;
+  --leaf-green-600: #059669;
+  --leaf-green-700: #047857;
+  --leaf-green-800: #065F46;
+  --leaf-green-900: #064E3B;
+  
+  /* Neutral Colors - Sophisticated Grays */
+  --indigo: #374151; /* Charcoal */
+  --indigo-light: #6B7280;
+  --indigo-dark: #111827;
+  --indigo-50: #F9FAFB;
+  --indigo-100: #F3F4F6;
+  --indigo-200: #E5E7EB;
+  --indigo-300: #D1D5DB;
+  --indigo-400: #9CA3AF;
+  --indigo-500: #6B7280;
+  --indigo-600: #4B5563;
+  --indigo-700: #374151;
+  --indigo-800: #1F2937;
+  --indigo-900: #111827;
+  
+  /* Warm Background Colors */
+  --warm-white: #FFFAF0; /* Cream white */
+  --cream: #FEF7ED; /* Warm cream */
+  --warm-gray: #8B7355; /* Warm brown-gray */
+  --dark-brown: #451A03; /* Rich brown */
+  
+  /* Enhanced Gradients - Food-Inspired */
+  --gradient-primary: linear-gradient(135deg, #DC2626 0%, #F59E0B 100%);
+  --gradient-secondary: linear-gradient(135deg, #374151 0%, #6B7280 100%);
+  --gradient-accent: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  --gradient-warm: linear-gradient(135deg, #FEF7ED 0%, #FFFBEB 100%);
+  --gradient-hero: linear-gradient(135deg, #DC2626 0%, #F59E0B 50%, #059669 100%);
+  --gradient-card: linear-gradient(145deg, #FFFFFF 0%, #FEF7ED 100%);
+  
+  /* Glassmorphism Colors */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-backdrop: blur(20px);
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-colored: 0 10px 25px -5px rgba(220, 38, 38, 0.2);
+  --shadow-golden: 0 10px 25px -5px rgba(245, 158, 11, 0.2);
   
   --background: 0 0% 100%;
   --foreground: 0 0% 3.9%;
@@ -74,9 +128,13 @@
   
   body {
     @apply bg-background text-foreground font-inter;
-    background: linear-gradient(135deg, #F8FAFF 0%, #EEF2FF 100%);
+    background: var(--gradient-warm);
     min-height: 100vh;
     line-height: 1.6;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -121,28 +179,101 @@
 }
 
 @layer components {
+  /* Enhanced Button Styles */
   .btn-primary {
-    @apply bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+    @apply relative overflow-hidden bg-gradient-to-r from-clay-red to-clay-red-dark text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-colored transform hover:-translate-y-1 hover:scale-105;
+    background: var(--gradient-primary);
+  }
+  
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-clay-red-light to-turmeric-yellow opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-primary:hover::before {
+    @apply opacity-100;
+  }
+  
+  .btn-primary span {
+    @apply relative z-10;
   }
   
   .btn-secondary {
-    @apply bg-gradient-to-r from-turmeric-yellow to-turmeric-yellow-dark hover:from-turmeric-yellow-dark hover:to-turmeric-yellow text-dark-brown font-semibold px-8 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+    @apply relative overflow-hidden bg-gradient-to-r from-turmeric-yellow to-turmeric-yellow-dark text-dark-brown font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-golden transform hover:-translate-y-1 hover:scale-105;
+  }
+  
+  .btn-secondary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-turmeric-yellow-light to-leaf-green-light opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-secondary:hover::before {
+    @apply opacity-100;
+  }
+  
+  .btn-secondary span {
+    @apply relative z-10;
   }
   
   .btn-outline {
-    @apply border-2 border-clay-red text-clay-red hover:bg-clay-red hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+    @apply relative border-2 border-clay-red text-clay-red hover:text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 hover:scale-105;
+  }
+  
+  .btn-outline::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-clay-red to-clay-red-dark scale-x-0 transition-transform duration-300 origin-left;
+  }
+  
+  .btn-outline:hover::before {
+    @apply scale-x-100;
+  }
+  
+  .btn-outline span {
+    @apply relative z-10;
   }
   
   .btn-ghost {
-    @apply text-indigo hover:bg-indigo hover:text-white font-medium px-6 py-2 rounded-lg transition-all duration-200;
+    @apply text-indigo hover:text-clay-red font-medium px-6 py-3 rounded-xl transition-all duration-300 hover:bg-clay-red-50 hover:shadow-md transform hover:-translate-y-0.5;
   }
   
+  /* Enhanced Card Styles */
   .card-modern {
-    @apply bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1;
+    @apply relative bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 hover:scale-105;
+    background: var(--gradient-card);
+  }
+  
+  .card-modern::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-clay-red-50/20 to-turmeric-yellow-50/20 opacity-0 transition-opacity duration-500;
+  }
+  
+  .card-modern:hover::before {
+    @apply opacity-100;
   }
   
   .card-hover {
-    @apply transform hover:scale-105 transition-all duration-300 hover:shadow-xl;
+    @apply transform transition-all duration-500 hover:scale-105 hover:shadow-xl hover:-translate-y-1;
+  }
+  
+  /* Glass Effect */
+  .glass-effect {
+    backdrop-filter: var(--glass-backdrop);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+  
+  /* Enhanced Interactive Elements */
+  .interactive {
+    @apply transition-all duration-300 cursor-pointer;
+  }
+  
+  .interactive:hover {
+    @apply transform -translate-y-1 scale-105;
+  }
+  
+  .interactive:active {
+    @apply transform scale-95;
   }
   
   .gradient-text {
