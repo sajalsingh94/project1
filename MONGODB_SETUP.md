@@ -2,7 +2,7 @@
 
 ## ✅ Current Status: WORKING OUT OF THE BOX
 
-Your application is now configured to work immediately without any setup required. The server uses JSON file storage by default, which is perfect for development and testing.
+Your application is configured to work immediately without any setup required. The server uses JSON file storage by default, which is perfect for development and testing.
 
 ## How It Works
 
@@ -10,7 +10,6 @@ The application has a **smart fallback system**:
 
 1. **Primary**: MongoDB (if configured)
 2. **Fallback**: JSON file storage (current default)
-3. **Additional**: SQLite (optional, currently disabled due to build issues)
 
 ## Current Configuration
 
@@ -18,7 +17,6 @@ The application is set up with:
 - **No MongoDB URI** = Uses JSON file storage (recommended for development)
 - **Port 3001** = Server runs on http://localhost:3001
 - **Data storage** = All data saved in `server/data/` directory
-- **Environment file** = `.env` file created with default configuration
 
 ## Server Output
 
@@ -28,7 +26,7 @@ When you run `pnpm run dev:server`, you'll see:
 [server] API server listening on http://localhost:3001
 ```
 
-This is **normal and expected** - your app is working perfectly! The `.env` file is now created, so you won't see any missing environment variable warnings.
+This is **normal and expected** - your app is working perfectly! This message indicates the app is using JSON file storage instead of MongoDB.
 
 ## Optional: Enable MongoDB
 
@@ -51,8 +49,7 @@ If you want to use MongoDB instead of JSON files:
 
 ## Environment Files
 
-- **`.env`** - Your local environment configuration (created automatically)
-- **`.env.example`** - Template file showing all available options
+- **`.env`** - Your local environment configuration
 - **`.gitignore`** - Excludes `.env` from version control (for security)
 
 ## Data Storage Locations
@@ -67,10 +64,6 @@ If you want to use MongoDB instead of JSON files:
 # Install dependencies (if not done already)
 pnpm install
 
-# The postinstall script automatically creates .env from .env.example
-# If you need to recreate it manually:
-pnpm run setup
-
 # Start the full application
 pnpm run dev
 
@@ -81,8 +74,7 @@ pnpm run dev:web     # Frontend development server
 
 ## Troubleshooting
 
-- **"MongoDB URI missing"**: Run `pnpm run setup` to recreate the .env file
-- **".env file missing after git operations"**: This is normal! Run `pnpm run setup` to restore it
+- **"MongoDB URI missing"**: This is normal! The app works without MongoDB using JSON file storage
 - **Server won't start**: Check if port 3001 is available
 - **Data not saving**: Check that `server/data/` directory is writable
 
