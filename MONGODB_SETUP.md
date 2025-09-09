@@ -1,67 +1,66 @@
-# MongoDB Setup Guide
+# Database Setup Guide
 
-## Current Status
-✅ **Server is now working!** The application will run with JSON file storage as fallback when MongoDB is not available.
+## ✅ Current Status: WORKING OUT OF THE BOX
 
-## The Problem
-Your MongoDB Atlas cluster is rejecting connections because your current IP address is not whitelisted. This is a common security feature in MongoDB Atlas.
+Your application is now configured to work immediately without any setup required. The server uses JSON file storage by default, which is perfect for development and testing.
 
-## Solutions
+## How It Works
 
-### Option 1: Fix MongoDB Atlas IP Whitelist (Recommended for Production)
+The application has a **smart fallback system**:
 
-1. **Get your current IP address:**
-   ```bash
-   curl -s https://api.ipify.org
+1. **Primary**: MongoDB (if configured)
+2. **Fallback**: JSON file storage (current default)
+3. **Additional**: SQLite (optional, currently disabled due to build issues)
+
+## Current Configuration
+
+The `.env` file is set up with:
+- **No MongoDB URI** = Uses JSON file storage (recommended for development)
+- **Port 3001** = Server runs on http://localhost:3001
+- **Data storage** = All data saved in `server/data/` directory
+
+## Server Output
+
+When you run `pnpm run dev:server`, you'll see:
+```
+[server] No MongoDB URI provided, using fallback storage
+[server] API server listening on http://localhost:3001
+```
+
+This is **normal and expected** - your app is working perfectly!
+
+## Optional: Enable MongoDB
+
+If you want to use MongoDB instead of JSON files:
+
+### Option 1: MongoDB Atlas (Cloud)
+1. Create a free account at [MongoDB Atlas](https://cloud.mongodb.com)
+2. Create a cluster and get your connection string
+3. Edit `.env` file and uncomment the MONGODB_URI line:
+   ```
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority&appName=cluster
    ```
 
-2. **Add your IP to MongoDB Atlas:**
-   - Go to [MongoDB Atlas Console](https://cloud.mongodb.com)
-   - Navigate to your cluster
-   - Go to "Network Access" in the left sidebar
-   - Click "Add IP Address"
-   - Add your current IP address (or use `0.0.0.0/0` for development - **NOT recommended for production**)
-
-3. **Update your connection string if needed:**
-   - Edit the `.env` file with your correct MongoDB URI
-   - Make sure the username and password are correct
-
-### Option 2: Use Local MongoDB (For Development)
-
-1. **Install MongoDB locally:**
-   ```bash
-   # On Ubuntu/Debian
-   sudo apt-get install mongodb
-   
-   # On macOS with Homebrew
-   brew install mongodb-community
-   ```
-
-2. **Update your `.env` file:**
+### Option 2: Local MongoDB
+1. Install MongoDB locally
+2. Edit `.env` file and uncomment the local MongoDB line:
    ```
    MONGODB_URI=mongodb://localhost:27017/bihari_delicacies
-   MONGODB_DB=bihari_delicacies
    ```
 
-### Option 3: Continue with JSON Storage (Current Working State)
+## Data Storage Locations
 
-The application is already working with JSON file storage. All data will be stored in the `server/data/` directory as JSON files. This is perfect for development and testing.
-
-## Environment Variables
-
-The application now uses environment variables for configuration. See `.env.example` for the required variables:
-
-- `MONGODB_URI`: Your MongoDB connection string
-- `MONGODB_DB`: Your database name
-- `PORT`: Server port (default: 3001)
+- **JSON files**: `server/data/` directory
+- **MongoDB**: Cloud or local MongoDB database
+- **Uploads**: `server/uploads/` directory
 
 ## Running the Application
 
 ```bash
-# Install dependencies
+# Install dependencies (if not done already)
 pnpm install
 
-# Start development server
+# Start the full application
 pnpm run dev
 
 # Or start components separately
@@ -69,21 +68,12 @@ pnpm run dev:server  # Backend API server
 pnpm run dev:web     # Frontend development server
 ```
 
-## Data Storage
-
-- **With MongoDB**: Data is stored in MongoDB collections
-- **Without MongoDB**: Data is stored in JSON files in `server/data/` directory
-- **SQLite**: Available as an additional fallback (currently disabled due to build issues)
-
 ## Troubleshooting
 
-1. **Server won't start**: Check if port 3001 is available
-2. **MongoDB connection fails**: Check your IP whitelist and connection string
-3. **Data not persisting**: Ensure the `server/data/` directory is writable
+- **"MongoDB URI missing"**: This is normal! The app works without MongoDB
+- **Server won't start**: Check if port 3001 is available
+- **Data not saving**: Check that `server/data/` directory is writable
 
-## Next Steps
+## Summary
 
-1. Choose one of the MongoDB setup options above
-2. Update your `.env` file accordingly
-3. Restart the server to test the connection
-4. For production, always use MongoDB with proper security settings
+**You don't need to do anything!** The application is configured to work out of the box with JSON file storage. MongoDB is completely optional and only needed if you want to scale to production with a proper database.
