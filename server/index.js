@@ -7,6 +7,10 @@ import path from 'path';
 import multer from 'multer';
 import Database from 'better-sqlite3';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const __dirnameCurrent = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
@@ -32,14 +36,19 @@ let ProductModel = null;
 
 async function connectMongoIfConfigured() {
   // Use the provided MongoDB connection string
-  const uri = process.env.MONGODB_URI || 'mongodb+srv://sajalsingh94_db_user:asdwer@cluster1.vzdx6lp.mongodb.net/?retryWrites=true&w=majority&appName=cluster1';
-  if (!uri) return;
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.log('[server] No MongoDB URI provided, using fallback storage');
+    return;
+  }
   
   try {
     await mongoose.connect(uri, { 
       dbName: process.env.MONGODB_DB || 'bihari_delicacies',
       retryWrites: true,
-      w: 'majority'
+      w: 'majority',
+      serverSelectionTimeoutMS: 5000, // 5 second timeout
+      connectTimeoutMS: 10000, // 10 second timeout
     });
     mongoConnected = true;
     
@@ -111,6 +120,7 @@ async function connectMongoIfConfigured() {
     console.log('[server] MongoDB connected successfully');
   } catch (err) {
     console.warn('[server] MongoDB connection failed, will use fallback storage. Reason:', err?.message || err);
+    console.log('[server] Server will continue running with JSON file storage');
   }
 }
 // Fire and forget; server continues to start
