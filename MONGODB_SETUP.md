@@ -67,6 +67,10 @@ If you want to use MongoDB instead of JSON files:
 # Install dependencies (if not done already)
 pnpm install
 
+# The postinstall script automatically creates .env from .env.example
+# If you need to recreate it manually:
+pnpm run setup
+
 # Start the full application
 pnpm run dev
 
@@ -77,7 +81,8 @@ pnpm run dev:web     # Frontend development server
 
 ## Troubleshooting
 
-- **"MongoDB URI missing"**: This is normal! The app works without MongoDB
+- **"MongoDB URI missing"**: Run `pnpm run setup` to recreate the .env file
+- **".env file missing after git operations"**: This is normal! Run `pnpm run setup` to restore it
 - **Server won't start**: Check if port 3001 is available
 - **Data not saving**: Check that `server/data/` directory is writable
 
