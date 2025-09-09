@@ -395,7 +395,7 @@ app.post('/api/auth/register', async (req, res) => {
 });
 
 app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body || {};
+  const { email, password, role } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
   
   try {
@@ -403,6 +403,11 @@ app.post('/api/auth/login', async (req, res) => {
       const user = await UserModel.findOne({ email: email.toLowerCase() });
       if (!user || user.password !== String(password)) {
         return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      
+      // Check if user role matches the requested role
+      if (role && user.role !== role) {
+        return res.status(403).json({ error: `Access denied. This account is registered as ${user.role}, not ${role}` });
       }
       
       const sid = uuidv4();
@@ -426,6 +431,11 @@ app.post('/api/auth/login', async (req, res) => {
     const users = readJson(usersFile);
     const user = users.find((u) => u.Email?.toLowerCase() === String(email).toLowerCase());
     if (!user || user.password !== String(password)) return res.status(401).json({ error: 'Invalid credentials' });
+    
+    // Check if user role matches the requested role
+    if (role && user.Roles !== role) {
+      return res.status(403).json({ error: `Access denied. This account is registered as ${user.Roles}, not ${role}` });
+    }
     const sid = uuidv4();
     sessionIdToUserId.set(sid, user.ID);
     res.cookie('sid', sid, { httpOnly: true, sameSite: 'lax' });
