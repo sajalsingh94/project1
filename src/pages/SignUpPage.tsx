@@ -70,7 +70,7 @@ const RoleToggle: React.FC<{ role: RoleType; onChange: (r: RoleType) => void }> 
         variant={role === 'user' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onChange('user')}
-        className={role === 'user' ? 'bg-clay-red hover:bg-clay-red-dark text-white' : ''}
+        className={role === 'user' ? 'bg-blue-500 hover:bg-blue-600 text-white' : ''}
       >
         User
       </Button>
@@ -79,7 +79,7 @@ const RoleToggle: React.FC<{ role: RoleType; onChange: (r: RoleType) => void }> 
         variant={role === 'seller' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onChange('seller')}
-        className={role === 'seller' ? 'bg-clay-red hover:bg-clay-red-dark text-white' : ''}
+        className={role === 'seller' ? 'bg-blue-500 hover:bg-blue-600 text-white' : ''}
       >
         Seller
       </Button>
@@ -162,9 +162,9 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-warm-white to-cream flex">
+    <div className="min-h-screen bg-gradient-to-br from-warm-white to-cream flex relative">
       {/* Left Panel - Sign Up Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-8 relative z-10">
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
@@ -173,7 +173,7 @@ const SignUpPage: React.FC = () => {
             </Link>
             <div className="text-sm text-gray-600">
               Already member?{' '}
-              <Link to="/login" className="text-clay-red hover:text-clay-red-dark font-medium">
+              <Link to="/login" className="text-blue-500 hover:text-blue-600 font-medium">
                 Sign in
               </Link>
             </div>
@@ -360,7 +360,7 @@ const SignUpPage: React.FC = () => {
       </div>
 
       {/* Right Panel - Illustrative Elements */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-indigo via-indigo-dark to-clay-red relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-indigo via-indigo-dark to-clay-red relative overflow-hidden z-0">
         {/* Abstract Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-32 h-32 bg-turmeric-yellow/20 rounded-full blur-xl"></div>
