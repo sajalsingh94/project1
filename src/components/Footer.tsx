@@ -55,50 +55,69 @@ const Footer: React.FC = () => {
 
 
   return (
-    <footer className="bg-dark-brown text-warm-white mt-16">
+    <footer className="relative bg-gradient-to-br from-dark-brown via-indigo-900 to-indigo-800 text-warm-white mt-20 overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%224%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] animate-pulse"></div>
+      </div>
+      
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <img src="/logo.svg" alt="Bihari Delicacies" className="w-12 h-12 rounded-lg" />
+      <div className="relative z-10 container mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          {/* Enhanced Company Info */}
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="w-16 h-16 bg-gradient-to-br from-clay-red to-turmeric-yellow rounded-2xl flex items-center justify-center shadow-xl">
+                  <span className="text-white font-bold text-2xl">B</span>
+                </div>
+                <div className="absolute -inset-1 bg-gradient-to-br from-clay-red/20 to-turmeric-yellow/20 rounded-2xl blur-sm"></div>
+              </div>
               <div>
-                <h3 className="text-xl font-playfair font-bold">Bihari Delicacies</h3>
-                <p className="text-sm text-warm-gray">Authentic Flavors of Bihar</p>
+                <h3 className="text-2xl font-playfair font-bold bg-gradient-to-r from-turmeric-yellow to-turmeric-yellow-light bg-clip-text text-transparent">
+                  Bihari Delicacies
+                </h3>
+                <p className="text-sm text-turmeric-yellow-200 font-medium">Authentic Flavors of Bihar</p>
               </div>
             </div>
-            <p className="text-sm text-warm-gray leading-relaxed">
+            <p className="text-sm text-gray-300 leading-relaxed">
               Bringing you the authentic tastes of Bihar through carefully curated products from local artisans and traditional recipes passed down through generations.
             </p>
             
-            {/* Contact Info */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-sm">
-                <Phone className="w-4 h-4 text-turmeric-yellow" />
-                <span>+91 98765 43210</span>
+            {/* Enhanced Contact Info */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 text-sm group cursor-pointer">
+                <div className="p-2 bg-turmeric-yellow/20 rounded-lg group-hover:bg-turmeric-yellow/30 transition-colors duration-300">
+                  <Phone className="w-4 h-4 text-turmeric-yellow" />
+                </div>
+                <span className="group-hover:text-turmeric-yellow transition-colors duration-300">+91 98765 43210</span>
               </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <Mail className="w-4 h-4 text-turmeric-yellow" />
-                <span>hello@biharidelicacies.com</span>
+              <div className="flex items-center space-x-3 text-sm group cursor-pointer">
+                <div className="p-2 bg-turmeric-yellow/20 rounded-lg group-hover:bg-turmeric-yellow/30 transition-colors duration-300">
+                  <Mail className="w-4 h-4 text-turmeric-yellow" />
+                </div>
+                <span className="group-hover:text-turmeric-yellow transition-colors duration-300">hello@biharidelicacies.com</span>
               </div>
-              <div className="flex items-start space-x-2 text-sm">
-                <MapPin className="w-4 h-4 text-turmeric-yellow mt-0.5" />
-                <span>Bihar, India</span>
+              <div className="flex items-start space-x-3 text-sm group cursor-pointer">
+                <div className="p-2 bg-turmeric-yellow/20 rounded-lg group-hover:bg-turmeric-yellow/30 transition-colors duration-300 mt-0.5">
+                  <MapPin className="w-4 h-4 text-turmeric-yellow" />
+                </div>
+                <span className="group-hover:text-turmeric-yellow transition-colors duration-300">Bihar, India</span>
               </div>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Enhanced Quick Links */}
           <div>
-            <h4 className="text-lg font-playfair font-semibold mb-4 text-turmeric-yellow">Quick Links</h4>
-            <ul className="space-y-2">
-              {quickLinks.map((link) =>
+            <h4 className="text-xl font-playfair font-bold mb-6 text-turmeric-yellow">Quick Links</h4>
+            <ul className="space-y-3">
+              {quickLinks.map((link, index) =>
               <li key={link.name}>
                   <Link
                   to={link.path}
-                  className="text-sm text-warm-gray hover:text-turmeric-yellow transition-colors duration-200">
+                  className="text-sm text-gray-300 hover:text-turmeric-yellow transition-all duration-300 hover:translate-x-2 flex items-center group">
 
+                    <span className="w-2 h-2 bg-turmeric-yellow rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     {link.name}
                   </Link>
                 </li>
@@ -106,16 +125,17 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Policies */}
+          {/* Enhanced Policies */}
           <div>
-            <h4 className="text-lg font-playfair font-semibold mb-4 text-turmeric-yellow">Policies</h4>
-            <ul className="space-y-2">
-              {policyLinks.map((link) =>
+            <h4 className="text-xl font-playfair font-bold mb-6 text-turmeric-yellow">Policies</h4>
+            <ul className="space-y-3">
+              {policyLinks.map((link, index) =>
               <li key={link.name}>
                   <Link
                   to={link.path}
-                  className="text-sm text-warm-gray hover:text-turmeric-yellow transition-colors duration-200">
+                  className="text-sm text-gray-300 hover:text-turmeric-yellow transition-all duration-300 hover:translate-x-2 flex items-center group">
 
+                    <span className="w-2 h-2 bg-turmeric-yellow rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     {link.name}
                   </Link>
                 </li>
@@ -123,49 +143,56 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Newsletter & Social */}
+          {/* Enhanced Newsletter & Social */}
           <div>
-            <h4 className="text-lg font-playfair font-semibold mb-4 text-turmeric-yellow">Stay Connected</h4>
+            <h4 className="text-xl font-playfair font-bold mb-6 text-turmeric-yellow">Stay Connected</h4>
             
-            {/* Newsletter Signup */}
-            <form onSubmit={handleNewsletterSubmit} className="space-y-3 mb-6">
-              <p className="text-sm text-warm-gray">
+            {/* Enhanced Newsletter Signup */}
+            <form onSubmit={handleNewsletterSubmit} className="space-y-4 mb-8">
+              <p className="text-sm text-gray-300">
                 Subscribe to our newsletter for recipes and special offers.
               </p>
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Input
                   type="email"
                   placeholder="Your email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-indigo-dark border-indigo-light text-white placeholder:text-warm-gray focus:border-turmeric-yellow"
+                  className="flex-1 bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-turmeric-yellow focus:ring-2 focus:ring-turmeric-yellow/20 rounded-2xl px-4 py-3"
                   required />
 
                 <Button
                   type="submit"
                   disabled={isSubscribing}
-                  className="bg-turmeric-yellow hover:bg-turmeric-yellow-dark text-dark-brown font-semibold px-6">
+                  className="bg-gradient-to-r from-turmeric-yellow to-turmeric-yellow-dark hover:from-turmeric-yellow-dark hover:to-turmeric-yellow text-dark-brown font-bold px-8 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
 
-                  {isSubscribing ? 'Subscribing...' : 'Subscribe'}
+                  {isSubscribing ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-dark-brown border-t-transparent rounded-full animate-spin"></div>
+                      <span>Subscribing...</span>
+                    </div>
+                  ) : (
+                    'Subscribe'
+                  )}
                 </Button>
               </div>
             </form>
 
-            {/* Social Media Links */}
+            {/* Enhanced Social Media Links */}
             <div>
-              <p className="text-sm text-warm-gray mb-3">Follow us on social media</p>
-              <div className="flex space-x-4">
-                {socialLinks.map((social) =>
+              <p className="text-sm text-gray-300 mb-4 font-medium">Follow us on social media</p>
+              <div className="flex space-x-3">
+                {socialLinks.map((social, index) =>
                 <a
                   key={social.name}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`text-warm-gray ${social.color} transition-colors duration-200`}
+                  className={`p-3 bg-gray-800/50 rounded-2xl text-gray-300 ${social.color} transition-all duration-300 hover:scale-110 hover:shadow-lg group`}
                   aria-label={`Follow us on ${social.name}`}>
 
-                    <social.icon className="w-5 h-5" />
-                  </a>
+                  <social.icon className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+                </a>
                 )}
               </div>
             </div>
@@ -173,28 +200,33 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* Footer Bottom */}
-      <div className="border-t border-indigo-dark bg-indigo-dark">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-4 text-sm text-warm-gray mb-4 md:mb-0">
+      {/* Enhanced Footer Bottom */}
+      <div className="border-t border-gray-700/50 bg-gradient-to-r from-indigo-900 to-indigo-800">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-4 text-sm text-gray-300">
               <span>© {currentYear} Bihari Delicacies. All rights reserved.</span>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1 text-sm text-warm-gray">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2 text-sm text-gray-300">
                 <span>Made with</span>
-                <Heart className="w-4 h-4 text-clay-red" />
+                <Heart className="w-4 h-4 text-clay-red animate-pulse" />
                 <span>for authentic Bihari cuisine</span>
               </div>
             </div>
           </div>
           
-          {/* Additional Info */}
-          <div className="mt-4 pt-4 border-t border-indigo text-center">
-            <p className="text-xs text-warm-gray">
+          {/* Enhanced Additional Info */}
+          <div className="mt-6 pt-6 border-t border-gray-700/50 text-center">
+            <p className="text-sm text-gray-400 font-medium">
               Supporting local artisans and preserving traditional Bihari culinary heritage since 2020
             </p>
+            <div className="mt-3 flex justify-center space-x-6 text-xs text-gray-500">
+              <span>🍽️ Traditional Recipes</span>
+              <span>🏠 Home Delivery</span>
+              <span>🌟 Premium Quality</span>
+            </div>
           </div>
         </div>
       </div>

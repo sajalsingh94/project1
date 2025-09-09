@@ -94,198 +94,300 @@ const ModernHeader: React.FC = () => {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? 'bg-white/85 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-lg' 
+          ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200/60 dark:border-gray-700/60 shadow-2xl' 
           : 'bg-transparent'
       }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          {/* Enhanced Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <motion.div
               className="relative"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-clay-red to-clay-red-dark rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <span className="text-white font-bold text-xl">B</span>
+              <div className="w-14 h-14 bg-gradient-to-br from-clay-red via-clay-red-dark to-turmeric-yellow rounded-3xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                <motion.span 
+                  className="text-white font-bold text-2xl"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  B
+                </motion.span>
               </div>
               <motion.div
-                className="absolute inset-0 rounded-2xl bg-gradient-to-br from-clay-red/20 to-clay-red-dark/20"
+                className="absolute inset-0 rounded-3xl bg-gradient-to-br from-turmeric-yellow/30 to-leaf-green/30"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileHover={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+              <motion.div
+                className="absolute -inset-1 rounded-3xl bg-gradient-to-br from-clay-red/20 to-turmeric-yellow/20 blur-sm"
                 initial={{ opacity: 0 }}
                 whileHover={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               />
             </motion.div>
-            <div className="hidden sm:block">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-clay-red to-clay-red-dark bg-clip-text text-transparent">
+            <motion.div 
+              className="hidden sm:block"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-clay-red via-clay-red-dark to-turmeric-yellow bg-clip-text text-transparent group-hover:from-turmeric-yellow group-hover:to-leaf-green transition-all duration-500">
                 Bihari Delicacies
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Authentic Flavors</p>
-            </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Authentic Flavors</p>
+            </motion.div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2">
-            {navigationItems.map((item) => {
+          {/* Enhanced Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-1">
+            {navigationItems.map((item, index) => {
               const isActive = location.pathname === item.path;
               return (
-                <Link
+                <motion.div
                   key={item.name}
-                  to={item.path}
-                  className="relative"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index, duration: 0.5 }}
                 >
-                  <motion.div
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${
-                      isActive
-                        ? 'text-white'
-                        : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
-                    }`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <Link
+                    to={item.path}
+                    className="relative group"
                   >
-                    <item.icon className="w-4 h-4" />
-                    <span className="font-medium">{item.name}</span>
-                  </motion.div>
-                  
-                  {isActive && (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg"
-                      layoutId="activeTab"
+                      className={`flex items-center space-x-2 px-6 py-3 rounded-2xl transition-all duration-300 font-semibold ${
+                        isActive
+                          ? 'text-white'
+                          : 'text-gray-700 dark:text-gray-300 hover:text-clay-red dark:hover:text-clay-red-light'
+                      }`}
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <motion.div
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <item.icon className="w-5 h-5" />
+                      </motion.div>
+                      <span className="font-medium">{item.name}</span>
+                    </motion.div>
+                    
+                    {isActive && (
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-clay-red to-clay-red-dark rounded-2xl shadow-lg"
+                        layoutId="activeTab"
+                        initial={false}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30
+                        }}
+                      />
+                    )}
+                    
+                    {/* Hover effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-turmeric-yellow/20 to-leaf-green/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       initial={false}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30
-                      }}
                     />
-                  )}
-                </Link>
+                  </Link>
+                </motion.div>
               );
             })}
           </nav>
 
-          {/* Search Bar */}
+          {/* Enhanced Search Bar */}
           <div className="hidden lg:flex flex-1 max-w-md mx-8">
             <form onSubmit={handleSearch} className="relative w-full">
               <motion.div
-                className="relative"
+                className="relative group"
                 whileFocus={{ scale: 1.02 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
               >
                 <input
                   type="text"
                   placeholder="Search authentic Bihari products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+                  className="w-full pl-14 pr-4 py-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-2 border-gray-200 dark:border-gray-700 rounded-3xl shadow-lg focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-clay-red/50 focus:border-clay-red transition-all duration-300 text-gray-700 dark:text-gray-300 placeholder-gray-500"
                 />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <motion.div
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Search className="w-6 h-6 text-gray-400 group-focus-within:text-clay-red transition-colors duration-300" />
+                </motion.div>
+                
+                {/* Search suggestions indicator */}
+                {searchQuery && (
+                  <motion.div
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="w-2 h-2 bg-clay-red rounded-full animate-pulse"></div>
+                  </motion.div>
+                )}
               </motion.div>
             </form>
           </div>
 
-          {/* User Actions */}
-          <div className="flex items-center space-x-3">
+          {/* Enhanced User Actions */}
+          <motion.div 
+            className="flex items-center space-x-2"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
             {/* Cart and Favorites */}
             {user && (
               <>
                 <motion.button
-                  className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-clay-red transition-colors duration-200"
-                  whileHover={{ scale: 1.1 }}
+                  className="relative p-3 text-gray-700 dark:text-gray-300 hover:text-clay-red transition-all duration-300 rounded-2xl hover:bg-clay-red-50 dark:hover:bg-clay-red-900/20 group"
+                  whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Heart className="w-6 h-6" />
+                  <Heart className="w-6 h-6 group-hover:fill-clay-red transition-all duration-300" />
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-clay-red/10 to-turmeric-yellow/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={false}
+                  />
                 </motion.button>
                 
                 <motion.button
                   onClick={() => (window.location.href = '/checkout')}
-                  className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-clay-red transition-colors duration-200"
-                  whileHover={{ scale: 1.1 }}
+                  className="relative p-3 text-gray-700 dark:text-gray-300 hover:text-clay-red transition-all duration-300 rounded-2xl hover:bg-clay-red-50 dark:hover:bg-clay-red-900/20 group"
+                  whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <ShoppingCart className="w-6 h-6" />
+                  <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
                   {cartCount > 0 && (
                     <motion.span
-                      className="absolute -top-1 -right-1 bg-clay-red text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
+                      className="absolute -top-1 -right-1 bg-gradient-to-r from-clay-red to-clay-red-dark text-white text-xs font-bold rounded-full min-w-[24px] h-6 px-2 flex items-center justify-center shadow-lg"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
                       transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      whileHover={{ scale: 1.2 }}
                     >
                       {cartCount}
                     </motion.span>
                   )}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-turmeric-yellow/10 to-leaf-green/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={false}
+                  />
                 </motion.button>
               </>
             )}
 
-            {/* Authentication */}
+            {/* Enhanced Authentication */}
             {!isLoading && (
-              <div className="hidden md:flex">
+              <motion.div 
+                className="hidden md:flex"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
                 {user ? (
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
-                      <User className="w-5 h-5" />
-                      <span className="font-medium">{user.Name}</span>
-                    </div>
-                    <AnimatedButton
-                      variant="outline"
-                      size="sm"
-                      onClick={handleLogout}
+                  <div className="flex items-center space-x-4">
+                    <motion.div 
+                      className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-2xl"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      Logout
-                    </AnimatedButton>
+                      <motion.div
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <User className="w-5 h-5 text-clay-red" />
+                      </motion.div>
+                      <span className="font-semibold">{user.Name}</span>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <AnimatedButton
+                        variant="outline"
+                        size="sm"
+                        onClick={handleLogout}
+                        className="border-clay-red text-clay-red hover:bg-clay-red hover:text-white font-semibold px-6 py-2 rounded-2xl"
+                      >
+                        Logout
+                      </AnimatedButton>
+                    </motion.div>
                   </div>
                 ) : (
-                  <div className="flex items-center space-x-2">
-                    <AnimatedButton
-                      variant="outline"
-                      size="sm"
-                      onClick={() => (window.location.href = '/login')}
+                  <div className="flex items-center space-x-3">
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      Login
-                    </AnimatedButton>
-                    <AnimatedButton
-                      variant="primary"
-                      size="sm"
-                      onClick={() => (window.location.href = '/register')}
+                      <AnimatedButton
+                        variant="outline"
+                        size="sm"
+                        onClick={() => (window.location.href = '/login')}
+                        className="border-clay-red text-clay-red hover:bg-clay-red hover:text-white font-semibold px-6 py-2 rounded-2xl"
+                      >
+                        Login
+                      </AnimatedButton>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      Sign Up
-                    </AnimatedButton>
+                      <AnimatedButton
+                        variant="primary"
+                        size="sm"
+                        onClick={() => (window.location.href = '/register')}
+                        className="bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red text-white font-semibold px-6 py-2 rounded-2xl shadow-lg hover:shadow-xl"
+                      >
+                        Sign Up
+                      </AnimatedButton>
+                    </motion.div>
                   </div>
                 )}
-              </div>
+              </motion.div>
             )}
 
-            {/* Mobile Menu Toggle */}
+            {/* Enhanced Mobile Menu Toggle */}
             <motion.button
-              className="md:hidden p-2 text-gray-700 dark:text-gray-300"
+              className="md:hidden p-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-clay-red-50 dark:hover:bg-clay-red-900/20 transition-all duration-300"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              whileHover={{ scale: 1.1 }}
+              whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.9 }}
             >
               <AnimatePresence mode="wait">
                 {isMenuOpen ? (
                   <motion.div
                     key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ rotate: -180, opacity: 0, scale: 0.5 }}
+                    animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                    exit={{ rotate: 180, opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.3, type: "spring", stiffness: 500 }}
                   >
-                    <X className="w-6 h-6" />
+                    <X className="w-6 h-6 text-clay-red" />
                   </motion.div>
                 ) : (
                   <motion.div
                     key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ rotate: 180, opacity: 0, scale: 0.5 }}
+                    animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                    exit={{ rotate: -180, opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.3, type: "spring", stiffness: 500 }}
                   >
                     <Menu className="w-6 h-6" />
                   </motion.div>
@@ -295,94 +397,160 @@ const ModernHeader: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Enhanced Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              className="md:hidden mt-4 p-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
+              className="md:hidden mt-6 p-6 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-gray-700/50 shadow-2xl"
+              initial={{ opacity: 0, height: 0, y: -20 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -20 }}
+              transition={{ duration: 0.4, type: "spring", stiffness: 300, damping: 30 }}
             >
-              {/* Mobile Search */}
-              <form onSubmit={handleSearch} className="mb-4">
-                <div className="relative">
+              {/* Enhanced Mobile Search */}
+              <motion.form 
+                onSubmit={handleSearch} 
+                className="mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
+              >
+                <div className="relative group">
                   <input
                     type="text"
-                    placeholder="Search products..."
+                    placeholder="Search authentic Bihari products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+                    className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-clay-red/50 focus:border-clay-red transition-all duration-300 text-gray-700 dark:text-gray-300 placeholder-gray-500"
                   />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <motion.div
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Search className="w-5 h-5 text-gray-400 group-focus-within:text-clay-red transition-colors duration-300" />
+                  </motion.div>
                 </div>
-              </form>
+              </motion.form>
 
-              {/* Mobile Navigation */}
-              <nav className="space-y-2 mb-4">
-                {navigationItems.map((item) => {
+              {/* Enhanced Mobile Navigation */}
+              <motion.nav 
+                className="space-y-3 mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+              >
+                {navigationItems.map((item, index) => {
                   const isActive = location.pathname === item.path;
                   return (
-                    <Link
+                    <motion.div
                       key={item.name}
-                      to={item.path}
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                        isActive
-                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                      }`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 * index, duration: 0.3 }}
                     >
-                      <item.icon className="w-5 h-5" />
-                      <span className="font-medium">{item.name}</span>
-                    </Link>
+                      <Link
+                        to={item.path}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 font-semibold group ${
+                          isActive
+                            ? 'bg-gradient-to-r from-clay-red to-clay-red-dark text-white shadow-lg'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-clay-red-50 dark:hover:bg-clay-red-900/20 hover:text-clay-red'
+                        }`}
+                      >
+                        <motion.div
+                          whileHover={{ rotate: 360 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <item.icon className="w-6 h-6" />
+                        </motion.div>
+                        <span className="font-medium">{item.name}</span>
+                        {isActive && (
+                          <motion.div
+                            className="ml-auto w-2 h-2 bg-white rounded-full"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 0.2 }}
+                          />
+                        )}
+                      </Link>
+                    </motion.div>
                   );
                 })}
-              </nav>
+              </motion.nav>
 
-              {/* Mobile User Actions */}
-              {user ? (
-                <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
-                    <User className="w-5 h-5" />
-                    <span className="font-medium">{user.Name}</span>
+              {/* Enhanced Mobile User Actions */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.3 }}
+              >
+                {user ? (
+                  <div className="space-y-4 pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
+                    <motion.div 
+                      className="flex items-center space-x-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 px-4 py-3 rounded-2xl"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <motion.div
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <User className="w-6 h-6 text-clay-red" />
+                      </motion.div>
+                      <span className="font-semibold text-lg">{user.Name}</span>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <AnimatedButton
+                        variant="outline"
+                        size="lg"
+                        onClick={handleLogout}
+                        className="w-full border-clay-red text-clay-red hover:bg-clay-red hover:text-white font-semibold py-3 rounded-2xl"
+                      >
+                        Logout
+                      </AnimatedButton>
+                    </motion.div>
                   </div>
-                  <AnimatedButton
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="w-full"
-                  >
-                    Logout
-                  </AnimatedButton>
-                </div>
-              ) : (
-                <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <AnimatedButton
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      window.location.href = '/login';
-                    }}
-                    className="w-full"
-                  >
-                    Login
-                  </AnimatedButton>
-                  <AnimatedButton
-                    variant="primary"
-                    size="sm"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      window.location.href = '/register';
-                    }}
-                    className="w-full"
-                  >
-                    Sign Up
-                  </AnimatedButton>
-                </div>
-              )}
+                ) : (
+                  <div className="space-y-4 pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <AnimatedButton
+                        variant="outline"
+                        size="lg"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          window.location.href = '/login';
+                        }}
+                        className="w-full border-clay-red text-clay-red hover:bg-clay-red hover:text-white font-semibold py-3 rounded-2xl"
+                      >
+                        Login
+                      </AnimatedButton>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <AnimatedButton
+                        variant="primary"
+                        size="lg"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          window.location.href = '/register';
+                        }}
+                        className="w-full bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red text-white font-semibold py-3 rounded-2xl shadow-lg"
+                      >
+                        Sign Up
+                      </AnimatedButton>
+                    </motion.div>
+                  </div>
+                )}
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from '@/lib/safe-motion';
 import { Star, Heart, Eye, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -96,145 +97,268 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const isVegetarian = product.dietary_tags?.some((tag) => tag.name.toLowerCase().includes('vegetarian'));
 
   return (
-    <Card className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 border-0 shadow-md">
-      {/* Discount Badge */}
+    <Card className="group relative overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 shadow-lg bg-gradient-to-br from-white to-warm-white hover:-translate-y-2 hover:scale-105">
+      {/* Enhanced Discount Badge */}
       {discountPercentage > 0 &&
-      <div className="absolute top-2 left-2 z-10">
-          <Badge className="bg-red-500 text-white">
+      <motion.div 
+        className="absolute top-3 left-3 z-20"
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+      >
+          <Badge className="bg-gradient-to-r from-clay-red to-clay-red-dark text-white font-bold px-3 py-1 rounded-full shadow-lg animate-pulse-slow">
             -{discountPercentage}%
           </Badge>
-        </div>
+        </motion.div>
       }
 
-      {/* Wishlist Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="absolute top-2 right-2 z-10 p-2 bg-white/80 hover:bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-        onClick={handleToggleWishlist}>
+      {/* Enhanced Wishlist Button */}
+      <motion.div
+        className="absolute top-3 right-3 z-20"
+        initial={{ opacity: 0, scale: 0 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          className="p-3 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 border border-white/20"
+          onClick={handleToggleWishlist}>
 
-        <Heart
-          className={`w-4 h-4 ${isInWishlist ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          <Heart
+            className={`w-5 h-5 transition-all duration-300 ${
+              isInWishlist 
+                ? 'fill-clay-red text-clay-red animate-bounce-in' 
+                : 'text-indigo-600 hover:text-clay-red'
+            }`} />
 
-      </Button>
+        </Button>
+      </motion.div>
 
-      {/* Product Image */}
-      <div className="relative aspect-square overflow-hidden bg-gray-100">
-        <img
+      {/* Enhanced Product Image */}
+      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+        <motion.img
           src={product.main_image || 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=400&fit=crop'}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.3 }}
+        />
         
-        {/* Stock Status */}
+        {/* Image Overlay Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        
+        {/* Enhanced Stock Status */}
         {product.stock_quantity === 0 &&
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <Badge variant="destructive" className="text-sm">
+        <motion.div 
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+            <Badge variant="destructive" className="text-sm font-semibold px-4 py-2 bg-clay-red text-white shadow-lg">
               Out of Stock
             </Badge>
-          </div>
+          </motion.div>
         }
 
-        {/* Quick View Button */}
-        <Button
-          variant="secondary"
-          size="sm"
-          className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-2"
-          onClick={() => onQuickView?.(product)}>
+        {/* Enhanced Quick View Button */}
+        <motion.div
+          className="absolute bottom-3 right-3"
+          initial={{ opacity: 0, y: 20 }}
+          whileHover={{ scale: 1.1, y: -2 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Button
+            variant="secondary"
+            size="sm"
+            className="p-3 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 border border-white/20"
+            onClick={() => onQuickView?.(product)}>
 
-          <Eye className="w-4 h-4" />
-        </Button>
+            <Eye className="w-4 h-4 text-indigo-600" />
+          </Button>
+        </motion.div>
+
+        {/* Shimmer Effect on Hover */}
+        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
       </div>
 
-      <CardContent className="p-4">
-        {/* Product Category & Badges */}
-        <div className="flex items-center justify-between mb-2">
+      <CardContent className="p-6 space-y-4">
+        {/* Enhanced Product Category & Badges */}
+        <div className="flex items-center justify-between mb-3">
           {product.category_name &&
-          <Badge variant="outline" className="text-xs">
-              {product.category_name}
-            </Badge>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Badge variant="outline" className="text-xs font-semibold px-3 py-1 bg-clay-red-50 text-clay-red border-clay-red-200 hover:bg-clay-red-100 transition-colors duration-200">
+                {product.category_name}
+              </Badge>
+            </motion.div>
           }
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-2">
             {isVegetarian &&
-            <div className="w-4 h-4 border border-green-600 flex items-center justify-center rounded">
-                <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-              </div>
+            <motion.div 
+              className="w-6 h-6 border-2 border-leaf-green-500 flex items-center justify-center rounded-full bg-leaf-green-50"
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.2 }}
+            >
+                <div className="w-3 h-3 bg-leaf-green-500 rounded-full"></div>
+              </motion.div>
             }
             {product.spice_level_name && product.spice_level &&
-            <Badge variant="outline" className="text-xs bg-red-50 text-red-700">
-                {'🌶️'.repeat(Math.min(product.spice_level, 3))}
-              </Badge>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Badge variant="outline" className="text-xs font-semibold px-3 py-1 bg-clay-red-50 text-clay-red-700 border-clay-red-200">
+                  {'🌶️'.repeat(Math.min(product.spice_level, 3))} {product.spice_level_name}
+                </Badge>
+              </motion.div>
             }
           </div>
         </div>
 
-        {/* Product Name */}
-        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 text-sm">
+        {/* Enhanced Product Name */}
+        <motion.h3 
+          className="font-bold text-gray-900 mb-2 line-clamp-2 text-base leading-tight group-hover:text-clay-red transition-colors duration-300"
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+        >
           {product.name}
-        </h3>
+        </motion.h3>
 
-        {/* Seller Name */}
+        {/* Enhanced Seller Name */}
         {product.seller_name &&
-        <p className="text-xs text-gray-600 mb-2 hover:text-orange-600 cursor-pointer">
+        <motion.p 
+          className="text-sm text-indigo-600 mb-3 hover:text-clay-red cursor-pointer font-medium transition-colors duration-200"
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+        >
             by {product.seller_name}
-          </p>
+          </motion.p>
         }
 
-        {/* Rating */}
-        <div className="flex items-center space-x-1 mb-2">
-          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-          <span className="text-sm font-medium">{product.rating}</span>
-          <span className="text-xs text-gray-500">({product.review_count})</span>
+        {/* Enhanced Rating */}
+        <div className="flex items-center space-x-2 mb-3">
+          <div className="flex items-center space-x-1">
+            {[...Array(5)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.1, duration: 0.3 }}
+              >
+                <Star 
+                  className={`w-4 h-4 ${
+                    i < Math.floor(product.rating) 
+                      ? 'text-turmeric-yellow-400 fill-current' 
+                      : 'text-gray-300'
+                  }`} 
+                />
+              </motion.div>
+            ))}
+          </div>
+          <span className="text-sm font-bold text-gray-900">{product.rating}</span>
+          <span className="text-xs text-gray-500">({product.review_count} reviews)</span>
         </div>
 
-        {/* Price */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
+        {/* Enhanced Price */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <motion.span 
+              className="text-2xl font-bold text-gray-900"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              ₹{product.price}
+            </motion.span>
             {product.original_price > product.price &&
-            <span className="text-sm text-gray-500 line-through">₹{product.original_price}</span>
+            <motion.span 
+              className="text-lg text-gray-500 line-through"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              ₹{product.original_price}
+            </motion.span>
             }
           </div>
+          {discountPercentage > 0 &&
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.3, type: "spring", stiffness: 500 }}
+          >
+            <span className="text-sm font-bold text-leaf-green-600 bg-leaf-green-50 px-2 py-1 rounded-full">
+              Save ₹{product.original_price - product.price}
+            </span>
+          </motion.div>
+          }
         </div>
 
-        {/* Dietary Tags */}
+        {/* Enhanced Dietary Tags */}
         {product.dietary_tags && product.dietary_tags.length > 0 &&
-        <div className="flex flex-wrap gap-1 mb-3">
+        <div className="flex flex-wrap gap-2 mb-4">
             {product.dietary_tags.slice(0, 2).map((tag, index) =>
-          <Badge
+          <motion.div
             key={index}
-            style={{ backgroundColor: tag.color }}
-            className="text-white text-xs">
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Badge
+              style={{ backgroundColor: tag.color }}
+              className="text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md hover:shadow-lg transition-shadow duration-200">
 
                 {tag.name}
               </Badge>
+            </motion.div>
           )}
             {product.dietary_tags.length > 2 &&
-          <Badge variant="outline" className="text-xs">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Badge variant="outline" className="text-xs font-semibold px-3 py-1 bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 transition-colors duration-200">
                 +{product.dietary_tags.length - 2} more
               </Badge>
+            </motion.div>
           }
           </div>
         }
 
-        {/* Add to Cart Button */}
-        <Button
-          className="w-full bg-orange-600 hover:bg-orange-700 text-white"
-          size="sm"
-          onClick={handleAddToCart}
-          disabled={product.stock_quantity === 0 || isLoading}>
+        {/* Enhanced Add to Cart Button */}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Button
+            className={`w-full font-bold py-3 px-6 rounded-2xl transition-all duration-300 ${
+              product.stock_quantity === 0 || isLoading
+                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                : 'bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red text-white shadow-lg hover:shadow-xl hover:shadow-colored'
+            }`}
+            size="lg"
+            onClick={handleAddToCart}
+            disabled={product.stock_quantity === 0 || isLoading}>
 
-          {isLoading ?
-          "Adding..." :
-          product.stock_quantity === 0 ?
-          "Out of Stock" :
-
-          <>
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Add to Cart
-            </>
-          }
-        </Button>
+            {isLoading ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Adding...</span>
+              </div>
+            ) : product.stock_quantity === 0 ? (
+              <div className="flex items-center space-x-2">
+                <span>Out of Stock</span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <ShoppingCart className="w-5 h-5" />
+                <span>Add to Cart</span>
+              </div>
+            )}
+          </Button>
+        </motion.div>
       </CardContent>
     </Card>);
 
