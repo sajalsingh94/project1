@@ -24,27 +24,27 @@ export default {
       colors: {
         // Brand colors
         'clay-red': {
-          DEFAULT: '#C44536',
-          light: '#D4635C',
-          dark: '#A23D2F'
+          DEFAULT: '#2563EB',
+          light: '#60A5FA',
+          dark: '#1E40AF'
         },
         'turmeric-yellow': {
-          DEFAULT: '#E4A853',
-          light: '#E8B870',
-          dark: '#D09638'
+          DEFAULT: '#22D3EE',
+          light: '#67E8F9',
+          dark: '#0891B2'
         },
         'indigo': {
-          DEFAULT: '#4C5B7C',
-          light: '#5A6A8B',
-          dark: '#3D486A'
+          DEFAULT: '#334155',
+          light: '#64748B',
+          dark: '#0F172A'
         },
         'leaf-green': {
-          DEFAULT: '#6B8E3D',
-          light: '#7BA048',
-          dark: '#567432'
+          DEFAULT: '#10B981',
+          light: '#34D399',
+          dark: '#059669'
         },
-        'warm-white': '#FDF8F3',
-        'cream': '#F5F1EB',
+        'warm-white': '#F8FAFF',
+        'cream': '#EEF2FF',
         'warm-gray': '#8B7355',
         'dark-brown': '#3D2914',
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -40,7 +41,10 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const { data, error } = await window.ezsite.apis.getUserInfo();
+      const getUserInfo = window.ezsite?.apis?.getUserInfo;
+      const { data, error } = getUserInfo
+        ? await getUserInfo()
+        : await api.auth.me();
       if (error || !data) {
         navigate('/login');
         return;

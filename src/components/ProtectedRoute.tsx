@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { api } from '@/lib/api';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -24,7 +25,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   const checkAuth = async () => {
     try {
-      const { data, error } = await window.ezsite.apis.getUserInfo();
+      const getUserInfo = window.ezsite?.apis?.getUserInfo;
+      const { data, error } = getUserInfo
+        ? await getUserInfo()
+        : await api.auth.me();
       if (error || !data) {
         setUser(null);
       } else {
