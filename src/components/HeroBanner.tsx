@@ -40,19 +40,7 @@ export default function HomeBanner() {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%224%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] animate-pulse"></div>
       </div>
 
-      {/* Background Image with Parallax Effect */}
-      <motion.div
-        className="absolute inset-0"
-        initial={{ scale: 1.2, opacity: 0.8 }}
-        animate={{ scale: 1, opacity: 0.6 }}
-        transition={{ duration: 10, ease: "easeOut" }}
-      >
-        <img
-          src="/banner.png"
-          alt="Traditional Bihari Cuisine"
-          className="w-full h-full object-cover"
-        />
-      </motion.div>
+      {/* Removed background image as requested */}
 
       {/* Enhanced gradient overlays for better text readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-black/50"></div>
@@ -92,19 +80,16 @@ export default function HomeBanner() {
               🍽️ Traditional Recipes • 🏠 Home Delivery • 🌟 Premium Quality
             </div>
             
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-extrabold leading-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-extrabold leading-tight">
               <span className="block text-white">Savor the</span>
-              <span className="block bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-400 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent">
                 Authentic Taste
               </span>
               <span className="block text-white">of Bihar</span>
             </h1>
             
-            <p className="text-lg md:text-xl lg:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed font-light">
-              Discover handcrafted delicacies from traditional Bihari kitchens. 
-              <br className="hidden md:block" />
-              From the famous <span className="text-yellow-300 font-semibold">Silao Khaja</span> to spicy <span className="text-orange-300 font-semibold">Litti Chokha</span> - 
-              every bite tells a story of heritage and flavor.
+            <p className="text-base md:text-lg text-gray-200 max-w-3xl mx-auto leading-relaxed">
+              Discover handcrafted delicacies from traditional Bihari kitchens. From Silao Khaja to Litti Chokha - every bite tells a story of heritage and flavor.
             </p>
           </motion.div>
           
@@ -119,7 +104,7 @@ export default function HomeBanner() {
               onClick={() => navigate('/shops')}
               icon={Store}
               iconPosition="right"
-              className="min-w-[220px] h-14 text-lg font-semibold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-2xl shadow-orange-500/25"
+              className="min-w-[220px] h-14 text-lg font-semibold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-2xl shadow-blue-500/25"
             >
               Explore Products
             </AnimatedButton>
@@ -139,18 +124,18 @@ export default function HomeBanner() {
               variant="secondary"
               size="lg"
               onClick={() => navigate('/register?mode=signup&role=seller')}
-              className="min-w-[220px] h-14 text-lg font-semibold bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 hover:from-yellow-500 hover:to-amber-600 shadow-2xl shadow-yellow-500/25"
+              className="min-w-[220px] h-14 text-lg font-semibold bg-gradient-to-r from-blue-400 to-blue-500 text-white hover:from-blue-500 hover:to-blue-600 shadow-2xl shadow-blue-500/25"
             >
               Start Selling
             </AnimatedButton>
           </motion.div>
 
-          {/* Special Offer Banner */}
+          {/* Green Box - Special Offer Banner */}
           <motion.div 
-            className="mt-12 p-4 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-2xl border border-green-400/30"
+            className="mt-12 p-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl shadow-xl border-2 border-green-400"
             variants={itemVariants}
           >
-            <p className="text-green-200 font-medium">
+            <p className="text-white font-medium text-center">
               🎉 <span className="font-bold">New User Special:</span> Get 15% off your first order + Free delivery on orders above ₹500
             </p>
           </motion.div>

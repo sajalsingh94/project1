@@ -155,7 +155,7 @@ const ModernHeader: React.FC = () => {
                   
                   {isActive && (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-clay-red to-clay-red-dark rounded-xl shadow-lg"
+                      className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg"
                       layoutId="activeTab"
                       initial={false}
                       transition={{
@@ -182,7 +182,7 @@ const ModernHeader: React.FC = () => {
                   placeholder="Search authentic Bihari products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-clay-red/50 transition-all duration-300"
+                  className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               </motion.div>
@@ -313,7 +313,7 @@ const ModernHeader: React.FC = () => {
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-red/50 transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
                   />
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 </div>
@@ -330,7 +330,7 @@ const ModernHeader: React.FC = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                         isActive
-                          ? 'bg-gradient-to-r from-clay-red to-clay-red-dark text-white shadow-lg'
+                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                     >
