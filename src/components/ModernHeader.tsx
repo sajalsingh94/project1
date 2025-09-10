@@ -394,7 +394,7 @@ const ModernHeader: React.FC = () => {
                 )}
               </AnimatePresence>
             </motion.button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Enhanced Mobile Menu */}
