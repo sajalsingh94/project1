@@ -275,10 +275,10 @@ const ShopsPage: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Mithila <span className="text-orange-600">Sellers</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
             Discover authentic sellers bringing traditional Mithila flavors directly to your doorstep
           </p>
         </div>
@@ -330,7 +330,7 @@ const ShopsPage: React.FC = () => {
 
         {/* Results Info */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-gray-600">
+          <p className="text-sm md:text-gray-600 md:text-base">
             {filteredSellers.length} seller{filteredSellers.length !== 1 ? 's' : ''} found
           </p>
           <div className="hidden md:block">
@@ -344,7 +344,7 @@ const ShopsPage: React.FC = () => {
         <div className="flex gap-8">
           {/* Desktop Filters Sidebar */}
           <div className="hidden md:block w-64 flex-shrink-0">
-            <Card className="p-6 sticky top-6">
+            <Card className="p-6 sticky top-6 text-sm">
               <div className="flex items-center gap-2 mb-4">
                 <Filter className="w-4 h-4" />
                 <h2 className="font-semibold">Filters</h2>

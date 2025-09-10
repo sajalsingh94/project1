@@ -106,16 +106,16 @@ const ModernHeader: React.FC = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Enhanced Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="flex items-center space-x-3 group min-w-0">
             <motion.div
               className="relative"
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <div className="w-14 h-14 bg-gradient-to-br from-clay-red via-clay-red-dark to-turmeric-yellow rounded-3xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-clay-red via-clay-red-dark to-turmeric-yellow rounded-3xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
                 <motion.span 
-                  className="text-white font-bold text-2xl"
+                  className="text-white font-bold text-xl sm:text-2xl"
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.2 }}
                 >
@@ -136,12 +136,12 @@ const ModernHeader: React.FC = () => {
               />
             </motion.div>
             <motion.div 
-              className="hidden sm:block"
+              className="hidden sm:block truncate"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
             >
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-clay-red via-clay-red-dark to-turmeric-yellow bg-clip-text text-transparent group-hover:from-turmeric-yellow group-hover:to-leaf-green transition-all duration-500">
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-clay-red via-clay-red-dark to-turmeric-yellow bg-clip-text text-transparent group-hover:from-turmeric-yellow group-hover:to-leaf-green transition-all duration-500">
                 Bihari Delicacies
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Authentic Flavors</p>
@@ -166,7 +166,7 @@ const ModernHeader: React.FC = () => {
                     <motion.div
                       className={`flex items-center space-x-2 px-6 py-3 rounded-2xl transition-all duration-300 font-semibold ${
                         isActive
-                          ? 'text-white'
+                          ? 'text-white bg-gradient-to-r from-clay-red to-clay-red-dark shadow-lg'
                           : 'text-gray-700 dark:text-gray-300 hover:text-clay-red dark:hover:text-clay-red-light'
                       }`}
                       whileHover={{ scale: 1.05, y: -2 }}
@@ -181,7 +181,7 @@ const ModernHeader: React.FC = () => {
                       <span className="font-medium">{item.name}</span>
                     </motion.div>
                     
-                    {isActive && (
+                    {false && (
                       <motion.div
                         className="absolute inset-0 bg-gradient-to-r from-clay-red to-clay-red-dark rounded-2xl shadow-lg"
                         layoutId="activeTab"
