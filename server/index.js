@@ -291,6 +291,87 @@ app.post('/api/orders', (req, res) => {
   res.json({ data: { id } });
 });
 
+// Simple payment simulation - always succeeds
+app.post('/api/payments/simulate', (req, res) => {
+  try {
+    const payload = req.body || {};
+    const paymentId = uuidv4();
+    res.json({ data: { success: true, paymentId, echo: payload } });
+  } catch (error) {
+    res.status(500).json({ error: 'Payment simulation failed' });
+  }
+});
+
+// Seller Banking Details storage
+const sellerBankingFile = 'seller_banking.json';
+if (!fs.existsSync(path.join(dataDir, sellerBankingFile))) writeJson(sellerBankingFile, []);
+
+// Get current user's seller banking details
+app.get('/api/sellers/banking', async (req, res) => {
+  try {
+    const user = await currentUser(req);
+    if (!user) return res.status(401).json({ error: 'Authentication required' });
+    const items = readJson(sellerBankingFile);
+    const record = items.find((i) => i.userId === user.ID);
+    if (!record) return res.json({ data: null });
+    res.json({ data: record });
+  } catch (error) {
+    console.error('Get banking error', error);
+    res.status(500).json({ error: 'Failed to get banking details' });
+  }
+});
+
+// Save current user's seller banking details
+app.post('/api/sellers/banking', async (req, res) => {
+  try {
+    const user = await currentUser(req);
+    if (!user) return res.status(401).json({ error: 'Authentication required' });
+
+    const {
+      accountHolderName,
+      bankAccountNumber,
+      ifsc,
+      bankName,
+      branch,
+      taxId
+    } = req.body || {};
+
+    // Basic validation
+    if (!accountHolderName || !bankAccountNumber || !ifsc || !bankName) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    if (!/^\d{6,18}$/.test(String(bankAccountNumber))) {
+      return res.status(400).json({ error: 'Invalid bank account number' });
+    }
+    if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(String(ifsc).toUpperCase())) {
+      return res.status(400).json({ error: 'Invalid IFSC format' });
+    }
+
+    const items = readJson(sellerBankingFile);
+    const idx = items.findIndex((i) => i.userId === user.ID);
+    const payload = {
+      userId: user.ID,
+      accountHolderName: String(accountHolderName),
+      bankAccountNumber: String(bankAccountNumber),
+      ifsc: String(ifsc).toUpperCase(),
+      bankName: String(bankName),
+      branch: branch ? String(branch) : '',
+      taxId: taxId ? String(taxId) : '',
+      updatedAt: new Date().toISOString()
+    };
+    if (idx >= 0) {
+      items[idx] = { ...items[idx], ...payload };
+    } else {
+      items.push({ ...payload, createdAt: new Date().toISOString() });
+    }
+    writeJson(sellerBankingFile, items);
+    res.json({ data: true });
+  } catch (error) {
+    console.error('Save banking error', error);
+    res.status(500).json({ error: 'Failed to save banking details' });
+  }
+});
+
 // Auth routes
 app.post('/api/auth/register', async (req, res) => {
   const { email, password, role, firstName, lastName, phone, address } = req.body || {};

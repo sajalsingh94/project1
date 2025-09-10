@@ -102,30 +102,18 @@ const CheckoutPage: React.FC = () => {
     );
   }, [cart.length, contactEmail, firstName, lastName, address1, city, state, postalCode, country]);
 
-  const placeOrder = async () => {
+  const continueToPayment = async () => {
     if (!canSubmit) return;
     setIsSubmitting(true);
     try {
-      const payload = {
+      const draftOrder = {
         contact: { email: contactEmail, phone: contactPhone },
         shippingAddress: { firstName, lastName, address1, address2, city, state, postalCode, country },
         shippingMethod,
         items: cart.map((c) => ({ productId: c.productId, name: c.product?.name, price: c.product?.price, quantity: c.quantity })),
         amounts: { subtotal, shippingFee, total }
       };
-      const { data, error } = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(payload)
-      }).then((r) => r.json());
-      if (error) throw new Error(error);
-      clearCart();
-      navigate('/', { replace: true });
-      // Optionally pass orderId in navigation state for a confirmation page later
-      console.log('Order placed:', data);
-    } catch (e) {
-      console.error('Order error', e);
+      navigate('/payment', { state: { draftOrder } });
     } finally {
       setIsSubmitting(false);
     }
@@ -235,15 +223,10 @@ const CheckoutPage: React.FC = () => {
             </div>
           </section>
 
-          {/* Payment (placeholder) */}
-          <section className="bg-white border rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-4">Payment</h2>
-            <p className="text-sm text-gray-600 mb-3">Payment methods coming soon. For now, place order with Cash on Delivery.</p>
-          </section>
-
+          {/* Continue to Payment */}
           <div className="flex justify-end">
-            <Button disabled={!canSubmit || isSubmitting} onClick={placeOrder} className="px-6">
-              {isSubmitting ? 'Placing order...' : 'Place order'}
+            <Button disabled={!canSubmit || isSubmitting} onClick={continueToPayment} className="px-6">
+              {isSubmitting ? 'Continuing...' : 'Continue to Payment'}
             </Button>
           </div>
         </div>

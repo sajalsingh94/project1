@@ -42,7 +42,7 @@ const BecomeSellerPage: React.FC = () => {
       if (bannerImage) payload.banner_image = bannerImage;
       const { error } = await api.sellers.create(payload) as any;
       if (!error) {
-        navigate('/shops');
+        navigate('/seller/banking');
       } else {
         // eslint-disable-next-line no-console
         console.error('Create seller failed', error);
