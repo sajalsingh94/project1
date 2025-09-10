@@ -145,10 +145,14 @@ const SignUpPage: React.FC = () => {
       }
       toast({
         title: "Account Created",
-        description: "Your account has been created successfully! Please log in to continue."
+        description: role === 'seller' ? 'Welcome seller! Please add your banking details.' : 'Your account has been created successfully! Please log in to continue.'
       });
       
-      navigate('/login');
+      if (role === 'seller') {
+        navigate('/seller/banking');
+      } else {
+        navigate('/login');
+      }
     } catch (err) {
       console.error('Registration error', err);
       toast({

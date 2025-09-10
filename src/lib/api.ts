@@ -97,6 +97,13 @@ export const api = {
   orders: {
     create: (payload: any) => request('/api/orders', { method: 'POST', body: JSON.stringify(payload) })
   },
+  payments: {
+    simulate: (payload: any) => request('/api/payments/simulate', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  sellerBanking: {
+    get: () => request('/api/sellers/banking'),
+    save: (payload: any) => request('/api/sellers/banking', { method: 'POST', body: JSON.stringify(payload) })
+  },
   table: {
     page: (tableId: number, payload: TablePageRequest) =>
       request(`/api/table/page/${tableId}`, { method: 'POST', body: JSON.stringify(payload) }),

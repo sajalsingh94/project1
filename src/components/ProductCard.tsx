@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from '@/lib/safe-motion';
 import { Star, Heart, Eye, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -41,6 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleAddToCart = async () => {
     if (product.stock_quantity === 0) {
@@ -359,6 +361,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </Button>
         </motion.div>
+        <div className="mt-2">
+          <Button
+            className="w-full bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            size="lg"
+            onClick={async () => {
+              await handleAddToCart();
+              navigate('/checkout');
+            }}
+            disabled={product.stock_quantity === 0 || isLoading}
+          >
+            Proceed to Checkout
+          </Button>
+        </div>
       </CardContent>
     </Card>);
 
