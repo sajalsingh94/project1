@@ -162,8 +162,8 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-warm-white to-cream flex items-center justify-center p-8">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex justify-center items-center p-6 bg-gradient-to-br from-blue-50 to-white">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <Link to="/" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -171,7 +171,7 @@ const SignUpPage: React.FC = () => {
             </Link>
             <div className="text-sm text-gray-600">
               Already member?{' '}
-              <Link to="/login" className="text-blue-500 hover:text-blue-600 font-medium">
+              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
                 Sign in
               </Link>
             </div>
@@ -179,8 +179,8 @@ const SignUpPage: React.FC = () => {
 
           {/* Title */}
           <div className="mb-8">
-            <h1 className="text-3xl font-playfair font-bold text-gray-900 mb-2">Sign Up</h1>
-            <p className="text-gray-600">Secure Your Communications with Bihari Delicacies.</p>
+            <h1 className="text-3xl font-semibold text-gray-800 mb-2">Sign Up</h1>
+            <p className="text-base text-gray-600">Create your account to get started.</p>
           </div>
 
           {/* Role Toggle */}
@@ -191,7 +191,7 @@ const SignUpPage: React.FC = () => {
           {/* Sign Up Form */}
           <form onSubmit={onSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name" className="text-base text-gray-600">Name</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
@@ -199,7 +199,7 @@ const SignUpPage: React.FC = () => {
                   type="text"
                   value={`${firstName} ${lastName}`.trim()}
                   placeholder="Daniel Ahmadi"
-                  className="pl-10"
+                  className="pl-10 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   readOnly
                 />
                 {firstName && lastName && (
@@ -214,9 +214,9 @@ const SignUpPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName" className="text-base text-gray-600">First Name</Label>
                 <Input
                   id="firstName"
                   type="text"
@@ -226,7 +226,7 @@ const SignUpPage: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName" className="text-base text-gray-600">Last Name</Label>
                 <Input
                   id="lastName"
                   type="text"
@@ -238,7 +238,7 @@ const SignUpPage: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-base text-gray-600">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
@@ -247,7 +247,7 @@ const SignUpPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="11Danielahmadi@gmail.com"
-                  className="pl-10"
+                  className="pl-10 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {email && emailSchema.safeParse(email).success && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -262,7 +262,7 @@ const SignUpPage: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-base text-gray-600">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
@@ -271,7 +271,7 @@ const SignUpPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="pl-10 pr-10"
+                  className="pl-10 pr-10 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="button"
@@ -304,7 +304,7 @@ const SignUpPage: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Re-Type Password</Label>
+              <Label htmlFor="confirmPassword" className="text-base text-gray-600">Re-Type Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
@@ -313,7 +313,7 @@ const SignUpPage: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-Type Password"
-                  className="pl-10 pr-10"
+                  className="pl-10 pr-10 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="button"
@@ -328,7 +328,7 @@ const SignUpPage: React.FC = () => {
             <Button 
               type="submit" 
               disabled={!isValid || isSubmitting} 
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white h-12 text-lg font-semibold"
+              className="w-full h-12 text-lg font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
             >
               {isSubmitting ? 'Creating Account...' : 'Sign Up'}
             </Button>

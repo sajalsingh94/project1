@@ -31,9 +31,9 @@ export default function HomeBanner() {
   };
 
   return (
-    <div className="relative w-full h-[90vh] min-h-[700px] overflow-hidden">
-      {/* Enhanced Dynamic Background with Food-Inspired Gradients */}
-      <div className="absolute inset-0 bg-gradient-to-br from-clay-red via-turmeric-yellow to-leaf-green animate-gradient-shift"></div>
+    <div className="relative w-full h-[70vh] min-h-[520px] overflow-hidden">
+      {/* Simplified calm blue gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700"></div>
       
       {/* Animated Background Pattern - Food-Inspired */}
       <div className="absolute inset-0 opacity-30">
@@ -43,7 +43,7 @@ export default function HomeBanner() {
       {/* Enhanced gradient overlays for better text readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
-      <div className="absolute inset-0 bg-gradient-to-br from-clay-red-900/30 via-transparent to-turmeric-yellow-900/30"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-transparent to-blue-900/30"></div>
       
       {/* Additional overlay for depth */}
       <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-black/20 to-black/40"></div>
@@ -86,7 +86,7 @@ export default function HomeBanner() {
             </motion.div>
             
             <motion.h1 
-              className="text-3xl md:text-5xl lg:text-6xl font-display font-extrabold leading-tight"
+              className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -110,7 +110,7 @@ export default function HomeBanner() {
             </motion.h1>
             
             <motion.p 
-              className="text-lg md:text-xl text-gray-100 max-w-4xl mx-auto leading-relaxed font-medium"
+              className="text-base md:text-lg text-gray-100 max-w-3xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.0 }}
@@ -121,7 +121,7 @@ export default function HomeBanner() {
           
           {/* Action Buttons */}
           <motion.div 
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
@@ -137,7 +137,7 @@ export default function HomeBanner() {
                 onClick={() => navigate('/shops')}
                 icon={Store}
                 iconPosition="right"
-                className="min-w-[240px] h-16 text-lg font-bold bg-gradient-to-r from-clay-red to-clay-red-dark hover:from-clay-red-dark hover:to-clay-red shadow-2xl shadow-colored group-hover:shadow-3xl transition-all duration-300"
+                className="min-w-[220px] h-12 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
               >
                 <span className="relative z-10">Explore Products</span>
               </AnimatedButton>
@@ -155,7 +155,7 @@ export default function HomeBanner() {
                 onClick={() => navigate('/recipes')}
                 icon={BookOpen}
                 iconPosition="right"
-                className="min-w-[240px] h-16 text-lg font-bold bg-white/20 backdrop-blur-md border-2 border-white/50 text-white hover:bg-white/30 hover:border-white/70 shadow-xl group-hover:shadow-2xl transition-all duration-300"
+                className="min-w-[220px] h-12 text-base font-medium border border-blue-200 text-white hover:bg-white/10 rounded-lg"
               >
                 <span className="relative z-10">Learn Recipes</span>
               </AnimatedButton>
@@ -171,7 +171,7 @@ export default function HomeBanner() {
                 variant="secondary"
                 size="lg"
                 onClick={() => navigate('/register?mode=signup&role=seller')}
-                className="min-w-[240px] h-16 text-lg font-bold bg-gradient-to-r from-turmeric-yellow to-turmeric-yellow-dark text-dark-brown hover:from-turmeric-yellow-light hover:to-leaf-green shadow-2xl shadow-golden group-hover:shadow-3xl transition-all duration-300"
+                className="min-w-[220px] h-12 text-base font-medium border border-blue-200 text-white hover:bg-white/10 rounded-lg"
               >
                 <span className="relative z-10">Start Selling</span>
               </AnimatedButton>
@@ -185,7 +185,7 @@ export default function HomeBanner() {
       
       {/* Enhanced Floating Decorative Elements */}
       <motion.div
-        className="absolute top-16 left-16 w-40 h-40 bg-gradient-to-br from-yellow-400/30 to-orange-500/30 rounded-full blur-3xl"
+        className="absolute top-16 left-16 w-40 h-40 bg-gradient-to-br from-blue-300/30 to-blue-500/30 rounded-full blur-3xl"
         animate={{
           y: [0, -30, 0],
           x: [0, 20, 0],
@@ -199,7 +199,7 @@ export default function HomeBanner() {
       />
       
       <motion.div
-        className="absolute bottom-20 right-20 w-48 h-48 bg-gradient-to-br from-red-400/25 to-pink-500/25 rounded-full blur-3xl"
+        className="absolute bottom-20 right-20 w-48 h-48 bg-gradient-to-br from-blue-200/25 to-blue-400/25 rounded-full blur-3xl"
         animate={{
           y: [0, 25, 0],
           x: [0, -15, 0],
@@ -213,7 +213,7 @@ export default function HomeBanner() {
       />
       
       <motion.div
-        className="absolute top-1/3 right-1/4 w-32 h-32 bg-gradient-to-br from-green-400/25 to-emerald-500/25 rounded-full blur-2xl"
+        className="absolute top-1/3 right-1/4 w-32 h-32 bg-gradient-to-br from-blue-300/25 to-blue-500/25 rounded-full blur-2xl"
         animate={{
           y: [0, -20, 0],
           x: [0, 25, 0],
@@ -227,7 +227,7 @@ export default function HomeBanner() {
       />
 
       <motion.div
-        className="absolute bottom-1/3 left-1/3 w-28 h-28 bg-gradient-to-br from-purple-400/20 to-indigo-500/20 rounded-full blur-2xl"
+        className="absolute bottom-1/3 left-1/3 w-28 h-28 bg-gradient-to-br from-blue-200/20 to-blue-500/20 rounded-full blur-2xl"
         animate={{
           y: [0, 15, 0],
           x: [0, -20, 0],

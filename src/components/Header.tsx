@@ -83,39 +83,36 @@ const Header: React.FC = () => {
 
 
   return (
-    <header className="glass-effect sticky top-0 z-50 border-b border-gray-200/50">
-      <div className="container-modern py-4">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-gray-200">
+      <div className="container-modern px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="flex items-center gap-3 group min-w-0">
             <div className="relative">
-              <img src="/logo.svg" alt="Bihari Delicacies" className="w-14 h-14 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300" />
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-clay-red/20 to-turmeric-yellow/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <img src="/logo.svg" alt="Bihari Delicacies" className="w-12 h-12 rounded-xl shadow transition" />
+              <div className="absolute inset-0 rounded-xl bg-blue-200/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-3xl font-playfair font-bold gradient-text">
+              <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
                 Bihari Delicacies
               </h1>
-              <p className="text-sm text-warm-gray font-medium">Authentic Flavors of Bihar</p>
+              <p className="text-sm text-gray-500">Authentic Flavors of Bihar</p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center gap-6">
             {navigationLinks.map((link) =>
             <Link
               key={link.name}
               to={link.path}
-              className={`relative font-poppins font-medium px-4 py-2 rounded-lg transition-all duration-300 ${
+              className={`relative font-inter text-sm px-3 py-2 rounded-lg transition ${
               link.active 
-                ? 'text-white bg-gradient-to-r from-clay-red to-clay-red-dark shadow-lg' 
-                : 'text-indigo hover:text-clay-red hover:bg-clay-red/10'
+                ? 'text-white bg-blue-600' 
+                : 'text-gray-700 hover:text-blue-700 hover:bg-blue-50'
               }`}
               >
                 {link.name}
-                {link.active && (
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-clay-red to-clay-red-dark opacity-90 -z-10"></div>
-                )}
               </Link>
             )}
           </nav>
@@ -128,14 +125,14 @@ const Header: React.FC = () => {
                 placeholder="Search for authentic Bihari products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-4 py-3 w-full border-2 border-gray-200 focus:border-clay-red rounded-xl bg-white/80 backdrop-blur-sm shadow-lg focus:shadow-xl transition-all duration-300" />
+                className="pl-12 pr-4 py-3 w-full border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
 
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-warm-gray group-focus-within:text-clay-red transition-colors duration-300" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
             </form>
           </div>
 
           {/* User Actions */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-3">
             {/* Mobile Search Toggle */}
             <Button
               variant="ghost"
@@ -143,18 +140,18 @@ const Header: React.FC = () => {
               className="lg:hidden"
               onClick={() => {/* Toggle mobile search */}}>
 
-              <Search className="w-5 h-5 text-indigo" />
+              <Search className="w-5 h-5 text-gray-700" />
             </Button>
 
             {/* Cart and Favorites - Show only for logged in users */}
             {user &&
             <>
                 <Button variant="ghost" size="sm" className="hidden sm:flex">
-                  <Heart className="w-5 h-5 text-indigo" />
+                  <Heart className="w-5 h-5 text-gray-700" />
                 </Button>
                 <Button variant="ghost" size="sm" className="relative" onClick={() => (window.location.href = '/checkout')}>
-                  <ShoppingCart className="w-5 h-5 text-indigo" />
-                  <span className="absolute -top-2 -right-2 bg-clay-red text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
+                  <ShoppingCart className="w-5 h-5 text-gray-700" />
+                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
                     {cartCount}
                   </span>
                 </Button>
@@ -185,9 +182,9 @@ const Header: React.FC = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}>
 
               {isMenuOpen ?
-              <X className="w-6 h-6 text-indigo" /> :
+              <X className="w-6 h-6 text-gray-700" /> :
 
-              <Menu className="w-6 h-6 text-indigo" />
+              <Menu className="w-6 h-6 text-gray-700" />
               }
             </Button>
           </div>
@@ -195,7 +192,7 @@ const Header: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen &&
-        <div className="md:hidden mt-4 pb-4 border-t border-cream">
+        <div className="md:hidden mt-4 pb-4 border-t border-gray-100">
             {/* Mobile Search */}
             <div className="lg:hidden mt-4 mb-4">
               <form onSubmit={handleSearch} className="relative">
@@ -204,7 +201,7 @@ const Header: React.FC = () => {
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border-indigo-light focus:border-clay-red" />
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
 
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-warm-gray" />
               </form>
@@ -217,9 +214,9 @@ const Header: React.FC = () => {
               key={link.name}
               to={link.path}
               onClick={() => setIsMenuOpen(false)}
-              className={`font-inter font-medium py-2 transition-colors duration-200 hover:text-clay-red ${
-              link.active ? 'text-clay-red' : 'text-indigo'}`
-              }>
+              className={`font-inter font-medium py-2 transition-colors duration-200 ${
+              link.active ? 'text-blue-700' : 'text-gray-700 hover:text-blue-700'}`}
+              >
 
                   {link.name}
                 </Link>
@@ -228,7 +225,7 @@ const Header: React.FC = () => {
 
             {/* Mobile User Actions */}
             {user &&
-          <div className="flex items-center space-x-4 mb-4 pb-4 border-b border-cream">
+          <div className="flex items-center space-x-4 mb-4 pb-4 border-b border-gray-100">
                 <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                   <Heart className="w-5 h-5" />
                   <span>Favorites</span>
@@ -245,15 +242,15 @@ const Header: React.FC = () => {
           <div className="flex flex-col space-y-3">
                 {user ?
             <div className="flex flex-col space-y-3">
-                    <div className="flex items-center space-x-2 text-indigo">
+                    <div className="flex items-center space-x-2 text-gray-700">
                       <User className="w-4 h-4" />
                       <span className="font-medium">{user.Name}</span>
                     </div>
                     <Button
                 variant="outline"
                 onClick={handleLogout}
-                className="border-clay-red text-clay-red hover:bg-clay-red hover:text-white">
-
+                className=""
+                >
                       Logout
                     </Button>
                   </div> :
@@ -262,7 +259,7 @@ const Header: React.FC = () => {
                     <Link to="/login?mode=login">
                       <Button
                   variant="outline"
-                  className="w-full border-indigo text-indigo hover:bg-indigo hover:text-white"
+                  className="w-full"
                   onClick={() => setIsMenuOpen(false)}>
 
                         Login
@@ -270,7 +267,7 @@ const Header: React.FC = () => {
                     </Link>
                     <Link to="/register?mode=signup">
                       <Button
-                  className="w-full bg-clay-red hover:bg-clay-red-dark text-white"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={() => setIsMenuOpen(false)}>
 
                         Sign Up
@@ -278,7 +275,8 @@ const Header: React.FC = () => {
                     </Link>
                     <Link to="/become-seller">
                       <Button
-                  className="w-full bg-turmeric-yellow hover:bg-turmeric-yellow-dark text-dark-brown font-semibold"
+                  variant="outline"
+                  className="w-full"
                   onClick={() => setIsMenuOpen(false)}>
 
                         Become a Seller
