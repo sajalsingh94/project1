@@ -86,7 +86,7 @@ export default function HomeBanner() {
             </motion.div>
             
             <motion.h1 
-              className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold leading-tight"
+              className="text-3xl md:text-5xl lg:text-6xl font-display font-extrabold leading-tight"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -97,15 +97,7 @@ export default function HomeBanner() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                Savor the
-              </motion.span>
-              <motion.span 
-                className="block bg-gradient-to-r from-turmeric-yellow-300 via-turmeric-yellow-400 to-turmeric-yellow-500 bg-clip-text text-transparent mb-2"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-              >
-                Authentic Taste
+                Savor the Authentic Taste
               </motion.span>
               <motion.span 
                 className="block text-white"
@@ -187,22 +179,7 @@ export default function HomeBanner() {
             </motion.div>
           </motion.div>
 
-          {/* Enhanced Special Offer Banner */}
-          <motion.div 
-            className="mt-12 p-8 bg-gradient-to-r from-leaf-green to-leaf-green-light rounded-3xl shadow-2xl border-2 border-leaf-green-300 relative overflow-hidden"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 1.4 }}
-            whileHover={{ scale: 1.02, y: -2 }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
-            <div className="relative z-10">
-              <p className="text-white font-bold text-center text-lg">
-                🎉 <span className="text-turmeric-yellow-200 font-extrabold">New User Special:</span> Get 15% off your first order + Free delivery on orders above ₹500
-              </p>
-            </div>
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-turmeric-yellow to-clay-red"></div>
-          </motion.div>
+          
         </div>
       </motion.div>
       

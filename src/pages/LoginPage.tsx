@@ -148,10 +148,8 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-warm-white to-cream flex relative">
-      {/* Left Panel - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 relative z-10">
-        <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-warm-white to-cream flex items-center justify-center p-8">
+      <div className="w-full max-w-md">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <Link to="/" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -242,61 +240,6 @@ const LoginPage: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-        </div>
-      </div>
-
-      {/* Right Panel - Illustrative Elements */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 relative overflow-hidden z-0">
-        {/* Abstract Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-32 h-32 bg-white/20 rounded-full blur-xl"></div>
-          <div className="absolute bottom-32 right-16 w-48 h-48 bg-white/10 rounded-full blur-xl"></div>
-          <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/15 rounded-full blur-xl"></div>
-        </div>
-
-        {/* Cards */}
-        <div className="relative z-10 p-12 flex flex-col justify-center space-y-8">
-          {/* Welcome Card */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl max-w-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Welcome Back</h3>
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                ✓
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">Ready to Continue</div>
-            <div className="w-full h-16 bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg flex items-center justify-center">
-              <div className="text-white text-sm font-medium">Your Dashboard</div>
-            </div>
-          </div>
-
-          {/* Social Icons */}
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-              <Instagram className="w-6 h-6 text-white" />
-            </div>
-            <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-.88-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-              </svg>
-            </div>
-          </div>
-
-          {/* Security Card */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl max-w-sm">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Secure Login</h3>
-                <p className="text-sm text-gray-600">Your account is protected with industry-standard security.</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <Helmet>
