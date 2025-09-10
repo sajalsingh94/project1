@@ -165,7 +165,7 @@ const ShopsPage: React.FC = () => {
   <div className="space-y-6">
       {/* City Filter */}
       <div>
-        <h3 className="font-medium mb-3">City</h3>
+        <h3 className="font-medium mb-2 text-base">City</h3>
         <Select value={filters.city} onValueChange={(value) => setFilters((prev) => ({ ...prev, city: value }))}>
           <SelectTrigger>
             <SelectValue placeholder="Select city" />
@@ -180,7 +180,7 @@ const ShopsPage: React.FC = () => {
 
       {/* Specialties Filter */}
       <div>
-        <h3 className="font-medium mb-3">Specialties</h3>
+        <h3 className="font-medium mb-2 text-base">Specialties</h3>
         <div className="space-y-2 max-h-32 overflow-y-auto">
           {allSpecialties.map((specialty) =>
         <div key={specialty} className="flex items-center space-x-2">
@@ -197,7 +197,7 @@ const ShopsPage: React.FC = () => {
 
       {/* Rating Filter */}
       <div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 text-sm">
           <Checkbox
           id="rating4plus"
           checked={filters.rating4Plus}
@@ -211,7 +211,7 @@ const ShopsPage: React.FC = () => {
 
       {/* Delivery Time Filter */}
       <div>
-        <h3 className="font-medium mb-3">Delivery Time</h3>
+        <h3 className="font-medium mb-2 text-base">Delivery Time</h3>
         <Select value={filters.deliveryTime} onValueChange={(value) => setFilters((prev) => ({ ...prev, deliveryTime: value }))}>
           <SelectTrigger>
             <SelectValue placeholder="Any time" />
@@ -226,7 +226,7 @@ const ShopsPage: React.FC = () => {
 
       {/* Price Band Filter */}
       <div>
-        <h3 className="font-medium mb-3">Price Range</h3>
+        <h3 className="font-medium mb-2 text-base">Price Range</h3>
         <Select value={filters.priceBand} onValueChange={(value) => setFilters((prev) => ({ ...prev, priceBand: value }))}>
           <SelectTrigger>
             <SelectValue placeholder="Any price" />
@@ -318,7 +318,7 @@ const ShopsPage: React.FC = () => {
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
+                  <SheetTitle className="text-base">Filters</SheetTitle>
                 </SheetHeader>
                 <div className="mt-6">
                   <FilterContent />
@@ -347,7 +347,7 @@ const ShopsPage: React.FC = () => {
             <Card className="p-6 sticky top-6 text-sm">
               <div className="flex items-center gap-2 mb-4">
                 <Filter className="w-4 h-4" />
-                <h2 className="font-semibold">Filters</h2>
+                <h2 className="font-semibold text-base">Filters</h2>
               </div>
               <FilterContent />
             </Card>
@@ -378,7 +378,11 @@ const ShopsPage: React.FC = () => {
           <p className="text-gray-600 mb-6">
             Are you a seller of authentic Mithila foods? Join our growing community of trusted partners.
           </p>
-          <Button size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white">
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+            onClick={() => navigate('/become-seller')}
+          >
             Become a Partner
           </Button>
         </div>
