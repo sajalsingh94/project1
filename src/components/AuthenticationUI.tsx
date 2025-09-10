@@ -99,13 +99,13 @@ const AuthenticationUI: React.FC<AuthenticationUIProps> = ({ className = "" }) =
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
         <Link to="/login">
-          <Button variant="ghost" size="sm" className="text-gray-700 hover:text-clay-red">
+          <Button variant="ghost" size="sm" className="text-gray-700">
             <LogIn className="w-4 h-4 mr-1" />
             Login
           </Button>
         </Link>
         <Link to="/register">
-          <Button size="sm" className="bg-clay-red hover:bg-clay-red-dark text-white">
+          <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
             <UserPlus className="w-4 h-4 mr-1" />
             Sign Up
           </Button>
@@ -131,7 +131,7 @@ const AuthenticationUI: React.FC<AuthenticationUIProps> = ({ className = "" }) =
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage src="" alt={user?.Name || ''} />
-              <AvatarFallback className="bg-orange-100 text-orange-700">
+              <AvatarFallback className="bg-blue-100 text-blue-700">
                 {user?.Name ? getInitials(user.Name) : 'U'}
               </AvatarFallback>
             </Avatar>

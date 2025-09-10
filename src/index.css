@@ -64,11 +64,11 @@
   --dark-brown: #451A03; /* Rich brown */
   
   /* Enhanced Gradients - Food-Inspired */
-  --gradient-primary: linear-gradient(135deg, #DC2626 0%, #F59E0B 100%);
-  --gradient-secondary: linear-gradient(135deg, #374151 0%, #6B7280 100%);
-  --gradient-accent: linear-gradient(135deg, #059669 0%, #10B981 100%);
-  --gradient-warm: linear-gradient(135deg, #FEF7ED 0%, #FFFBEB 100%);
-  --gradient-hero: linear-gradient(135deg, #DC2626 0%, #F59E0B 50%, #059669 100%);
+  --gradient-primary: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  --gradient-secondary: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%);
+  --gradient-accent: linear-gradient(135deg, #38BDF8 0%, #60A5FA 100%);
+  --gradient-warm: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+  --gradient-hero: linear-gradient(135deg, #2563EB 0%, #1D4ED8 50%, #38BDF8 100%);
   --gradient-card: linear-gradient(145deg, #FFFFFF 0%, #FEF7ED 100%);
   
   /* Glassmorphism Colors */
@@ -86,15 +86,15 @@
   --shadow-golden: 0 10px 25px -5px rgba(245, 158, 11, 0.2);
   
   --background: 0 0% 100%;
-  --foreground: 0 0% 3.9%;
+  --foreground: 222.2 47.4% 11.2%;
   --card: 0 0% 100%;
   --card-foreground: 0 0% 3.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 3.9%;
-  --primary: 0 0% 9%;
+  --primary: 217.2 91.2% 59.8%;
   --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 96.1%;
-  --secondary-foreground: 0 0% 9%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
   --muted: 0 0% 96.1%;
   --muted-foreground: 0 0% 45.1%;
   --accent: 0 0% 96.1%;
@@ -103,7 +103,7 @@
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 89.8%;
   --input: 0 0% 89.8%;
-  --ring: 0 0% 3.9%;
+  --ring: 217.2 91.2% 59.8%;
   --radius: 0.5rem;
 
   --sidebar-background: 0 0% 98%;
