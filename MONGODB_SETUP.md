@@ -1,8 +1,16 @@
 # Database Setup Guide
 
-## ✅ Current Status: MONGODB ATLAS CONFIGURED
+## ✅ Current Status: MONGODB ATLAS CONFIGURED & PROTECTED
 
 Your application is now configured with MongoDB Atlas and working perfectly! The server connects to your MongoDB Atlas cluster for data storage.
+
+## 🔒 ENVIRONMENT FILE PROTECTION
+
+Your `.env` file is now protected with multiple safeguards:
+- ✅ **File permissions set to 600** (owner read/write only)
+- ✅ **Backup created** (`.env.backup`)
+- ✅ **Git ignored** (won't be committed to version control)
+- ✅ **Protection script** (`./protect-env.sh`) to verify configuration
 
 ## How It Works
 
@@ -73,11 +81,42 @@ pnpm run dev:server  # Backend API server
 pnpm run dev:web     # Frontend development server
 ```
 
+## 🔒 Protecting Your .env File
+
+### Automatic Protection
+Your `.env` file is automatically protected, but if you need to restore it:
+
+```bash
+# Check if .env file is properly configured
+./protect-env.sh
+
+# If .env gets deleted or corrupted, restore from backup
+cp .env.backup .env
+chmod 600 .env
+```
+
+### Manual Protection
+If you need to edit the `.env` file:
+
+1. **Never comment out the MONGODB_URI line**
+2. **Keep the file permissions as 600**
+3. **Always create a backup before making changes**
+4. **Test the connection after any changes**
+
+### Current Configuration
+```bash
+# Your current .env file contains:
+MONGODB_URI=mongodb+srv://sajalsingh94_db_user:asdwer@cluster1.vzdx6lp.mongodb.net/?retryWrites=true&w=majority&appName=cluster1
+MONGODB_DB=bihari_delicacies
+PORT=3001
+```
+
 ## Troubleshooting
 
 - **"MongoDB connection failed"**: Check your internet connection and MongoDB Atlas cluster status
 - **Server won't start**: Check if port 3001 is available
 - **Data not saving**: Verify MongoDB Atlas connection and database permissions
+- **".env file missing"**: Run `./protect-env.sh` to restore from backup
 
 ## Summary
 
