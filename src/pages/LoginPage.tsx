@@ -110,21 +110,21 @@ const LoginPage: React.FC = () => {
     }
     setIsSubmitting(true);
     try {
-      const { data, error } = await window.ezsite?.apis?.login({ email, password, role });
-      if (error) {
+      const res: any = await window.ezsite?.apis?.login({ email, password, role });
+      if (!res || res.error || res.success === false) {
         toast({
           title: "Login Failed",
-          description: error,
+          description: res?.message || res?.error || 'Invalid email or password',
           variant: "destructive"
         });
         return;
       }
-      // Persist auth like requested
-      if (data && (data as any).token) {
-        localStorage.setItem('token', (data as any).token);
+      // Persist auth
+      if (res.token) {
+        localStorage.setItem('token', res.token);
       }
-      if (data && ((data as any).role || (data as any).Roles)) {
-        localStorage.setItem('role', (data as any).role || (data as any).Roles);
+      if (res.role || res.Roles) {
+        localStorage.setItem('role', res.role || res.Roles);
       }
       navigate('/');
     } catch (err) {
