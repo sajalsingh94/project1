@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from '../lib/api';
+import { api } from '../lib/api';
 
 const BankingDetails: React.FC = () => {
   const [accountNumber, setAccountNumber] = useState('');
@@ -8,11 +8,19 @@ const BankingDetails: React.FC = () => {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const res = await axios.post('/api/seller/banking-details', { accountNumber, ifsc, bankName });
-    if ((res as any)?.data?.success) {
+    const res = await fetch('/api/seller/banking-details', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+      },
+      body: JSON.stringify({ accountNumber, ifsc, bankName })
+    });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok && (json?.success || json?.data)) {
       alert('Banking details saved successfully');
     } else {
-      alert((res as any)?.data?.message || 'Failed to save');
+      alert(json?.message || 'Failed to save');
     }
   }
 

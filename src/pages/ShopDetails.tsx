@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from '../lib/api';
+import { api } from '../lib/api';
 
 const ShopDetails: React.FC = () => {
   const [shopName, setShopName] = useState('');
@@ -8,11 +8,19 @@ const ShopDetails: React.FC = () => {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const res = await axios.post('/api/seller/shop-details', { shopName, address, category });
-    if ((res as any)?.data?.success) {
+    const res = await fetch('/api/seller/shop-details', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+      },
+      body: JSON.stringify({ shopName, address, category })
+    });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok && (json?.success || json?.data)) {
       alert('Shop details saved successfully');
     } else {
-      alert((res as any)?.data?.message || 'Failed to save');
+      alert(json?.message || 'Failed to save');
     }
   }
 

@@ -25,10 +25,26 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<{ dat
 
 export const api = {
   auth: {
-    register: (payload: { email: string; password: string; role?: string; firstName?: string; lastName?: string; phone?: string; address?: string }) =>
-      request('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
-    login: (payload: { email: string; password: string; role?: string }) =>
-      request('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+    register: async (payload: { email: string; password: string; role?: string; firstName?: string; lastName?: string; phone?: string; address?: string }) => {
+      try {
+        const res = await fetch('/api/auth/register', { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) return { error: json?.message || json?.error || res.statusText } as any;
+        return json as any;
+      } catch (error) {
+        return { error } as any;
+      }
+    },
+    login: async (payload: { email: string; password: string; role?: string }) => {
+      try {
+        const res = await fetch('/api/auth/login', { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) return { error: json?.message || json?.error || res.statusText } as any;
+        return json as any;
+      } catch (error) {
+        return { error } as any;
+      }
+    },
     logout: () => request('/api/auth/logout', { method: 'POST' }),
     me: () => request('/api/auth/me')
   },
