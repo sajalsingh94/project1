@@ -14,6 +14,7 @@ import {
   Info
 } from 'lucide-react';
 import AnimatedButton from './ui/AnimatedButton';
+import ThemeToggle from './ThemeToggle';
 
 interface UserInfo {
   ID: number;
@@ -289,6 +290,9 @@ const ModernHeader: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
+            <div className="hidden md:block mr-2">
+              <ThemeToggle />
+            </div>
             {/* Cart and Favorites */}
             {user && (
               <>
