@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from '@/lib/safe-motion';
+import { api } from '@/lib/api';
 import { 
   Search, 
   Menu, 
@@ -52,9 +53,12 @@ const ModernHeader: React.FC = () => {
 
   const checkUserAuth = async () => {
     try {
-      const { data, error } = await window.ezsite.apis.getUserInfo();
+      const getUserInfo = window.ezsite?.apis?.getUserInfo;
+      const { data, error } = getUserInfo
+        ? await getUserInfo()
+        : await api.auth.me();
       if (!error && data) {
-        setUser(data);
+        setUser(data as any);
       }
     } catch (error) {
       console.error('Auth check error:', error);
@@ -82,7 +86,8 @@ const ModernHeader: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      const { error } = await window.ezsite.apis.logout();
+      const logout = window.ezsite?.apis?.logout;
+      const { error } = logout ? await logout() : await api.auth.logout();
       if (!error) {
         setUser(null);
         window.location.href = '/';
