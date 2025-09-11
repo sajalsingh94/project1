@@ -92,7 +92,8 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
 
   const navigation = [
     { name: 'Dashboard', href: '/seller/dashboard', icon: BarChart3 },
-    { name: 'Profile', href: '/seller/dashboard?tab=profile', icon: Store },
+    { name: 'Shop Details', href: '/seller/dashboard?tab=profile', icon: Store },
+    { name: 'Banking Details', href: '/seller/banking', icon: Settings },
     { name: 'Products', href: '/seller/dashboard?tab=products', icon: Package },
     { name: 'Analytics', href: '/seller/dashboard?tab=analytics', icon: BarChart3 },
     { name: 'Settings', href: '/seller/dashboard?tab=settings', icon: Settings },

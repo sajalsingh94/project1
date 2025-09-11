@@ -56,10 +56,7 @@ const RoleBasedRedirect: React.FC<RoleBasedRedirectProps> = ({ children }) => {
     return <>{children}</>;
   }
 
-  // Redirect based on user role
-  if (user.Roles === 'seller') {
-    return <Navigate to="/seller/dashboard" replace />;
-  }
+  // Do not auto-redirect sellers; allow normal navigation to home
 
   // For regular users, check if they're trying to access a seller-only route
   const sellerRoutes = ['/seller/dashboard', '/become-seller'];
