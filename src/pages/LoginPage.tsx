@@ -129,11 +129,7 @@ const LoginPage: React.FC = () => {
       
       // Small delay to ensure auth state is updated
       setTimeout(() => {
-        if (role === 'seller') {
-          navigate('/seller/dashboard');
-        } else {
-          navigate('/');
-        }
+        navigate('/');
       }, 100);
     } catch (err) {
       console.error('Login error', err);

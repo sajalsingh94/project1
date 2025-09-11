@@ -208,6 +208,33 @@ const ModernHeader: React.FC = () => {
                 </motion.div>
               );
             })}
+            {user?.Roles === 'seller' && (
+              <motion.div
+                key="seller-dashboard"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <Link to="/seller/dashboard" className="relative group">
+                  <motion.div
+                    className={`flex items-center space-x-2 px-6 py-3 rounded-2xl transition-all duration-300 font-semibold ${
+                      location.pathname.startsWith('/seller')
+                        ? 'text-white bg-gradient-to-r from-clay-red to-clay-red-dark shadow-lg'
+                        : 'text-gray-700 dark:text-gray-300 hover:text-clay-red dark:hover:text-clay-red-light'
+                    }`}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Store className="w-5 h-5" />
+                    <span className="font-medium">Seller Dashboard</span>
+                  </motion.div>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-turmeric-yellow/20 to-leaf-green/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={false}
+                  />
+                </Link>
+              </motion.div>
+            )}
           </nav>
 
           {/* Enhanced Search Bar */}
@@ -482,6 +509,27 @@ const ModernHeader: React.FC = () => {
                     </motion.div>
                   );
                 })}
+                {user?.Roles === 'seller' && (
+                  <motion.div
+                    key="seller-dashboard-mobile"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3, duration: 0.3 }}
+                  >
+                    <Link
+                      to="/seller/dashboard"
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 font-semibold group ${
+                        location.pathname.startsWith('/seller')
+                          ? 'bg-gradient-to-r from-clay-red to-clay-red-dark text-white shadow-lg'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-clay-red-50 dark:hover:bg-clay-red-900/20 hover:text-clay-red'
+                      }`}
+                    >
+                      <Store className="w-6 h-6" />
+                      <span className="font-medium">Seller Dashboard</span>
+                    </Link>
+                  </motion.div>
+                )}
               </motion.nav>
 
               {/* Enhanced Mobile User Actions */}

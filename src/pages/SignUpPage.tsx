@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -97,6 +98,7 @@ const SignUpPage: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [role, setRole] = useState<RoleType>('user');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -143,16 +145,8 @@ const SignUpPage: React.FC = () => {
         });
         return;
       }
-      toast({
-        title: "Account Created",
-        description: role === 'seller' ? 'Welcome seller! Please add your banking details.' : 'Your account has been created successfully! Please log in to continue.'
-      });
-      
-      if (role === 'seller') {
-        navigate('/seller/banking');
-      } else {
-        navigate('/login');
-      }
+      // Show confirmation modal instead of redirecting
+      setShowSuccess(true);
     } catch (err) {
       console.error('Registration error', err);
       toast({
@@ -359,6 +353,28 @@ const SignUpPage: React.FC = () => {
             </svg>
           </div>
       </div>
+
+      {/* Signup Success Modal */}
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign Up Successful</DialogTitle>
+            <DialogDescription>
+              You have been signed up successfully. Please click on the Login button to login.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setShowSuccess(false);
+                navigate('/login');
+              }}
+            >
+              Login
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Helmet>
         <title>Sign Up | Bihari Delicacies</title>
