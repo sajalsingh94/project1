@@ -8,9 +8,11 @@ export type TablePageRequest = {
 
 async function request<T>(url: string, options: RequestInit = {}): Promise<{ data?: T; error?: any }> {
   try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const authHeader = token ? { Authorization: `Bearer ${token}` } : {} as any;
     const res = await fetch(url, {
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      headers: { 'Content-Type': 'application/json', ...authHeader, ...(options.headers || {}) },
       ...options
     });
     const json = await res.json().catch(() => ({}));
@@ -23,10 +25,26 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<{ dat
 
 export const api = {
   auth: {
-    register: (payload: { email: string; password: string; role?: string; firstName?: string; lastName?: string; phone?: string; address?: string }) =>
-      request('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
-    login: (payload: { email: string; password: string; role?: string }) =>
-      request('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+    register: async (payload: { email: string; password: string; role?: string; firstName?: string; lastName?: string; phone?: string; address?: string }) => {
+      try {
+        const res = await fetch('/api/auth/register', { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) return { error: json?.message || json?.error || res.statusText } as any;
+        return json as any;
+      } catch (error) {
+        return { error } as any;
+      }
+    },
+    login: async (payload: { email: string; password: string; role?: string }) => {
+      try {
+        const res = await fetch('/api/auth/login', { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) return { error: json?.message || json?.error || res.statusText } as any;
+        return json as any;
+      } catch (error) {
+        return { error } as any;
+      }
+    },
     logout: () => request('/api/auth/logout', { method: 'POST' }),
     me: () => request('/api/auth/me')
   },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,6 +28,7 @@ import './styles/design-system.css';
 import Dashboard from './pages/Dashboard';
 import ShopDetails from './pages/ShopDetails';
 import BankingDetails from './pages/BankingDetails';
+import authAdapter from './lib/authAdapter';
 
 function ProtectedSellerRoute({ children }: { children: React.ReactElement }) {
   const role = typeof window !== 'undefined' ? localStorage.getItem('role') : null;
@@ -56,6 +57,32 @@ const App = () => (
             <BrowserRouter>
               <RoleBasedRedirect>
                 <Layout>
+                  {/** Rehydrate auth on app load */}
+                  {(() => {
+                    // Side-effect hook wrapper for JSX
+                    // eslint-disable-next-line react-hooks/rules-of-hooks
+                    useEffect(() => {
+                      async function init() {
+                        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+                        if (token) {
+                          try {
+                            const meRes: any = await authAdapter.me();
+                            const role = meRes?.data?.Roles || meRes?.role || meRes?.data?.role;
+                            if (role) {
+                              localStorage.setItem('role', role);
+                              window.dispatchEvent(new CustomEvent('authStateChanged'));
+                            }
+                          } catch (_err) {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('role');
+                            window.dispatchEvent(new CustomEvent('authStateChanged'));
+                          }
+                        }
+                      }
+                      init();
+                    }, []);
+                    return null;
+                  })()}
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/shops" element={<ShopsPage />} />
