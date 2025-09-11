@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import Joi from 'joi';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -15,6 +17,7 @@ dotenv.config();
 const __dirnameCurrent = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
 const PORT = process.env.PORT || 3001;
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-prod';
 
 // CORS for Vite dev server
 app.use(cors({ origin: [/^http:\/\/localhost:\d+$/, /^http:\/\/\[::\]:\d+$/], credentials: true }));
@@ -404,132 +407,90 @@ app.post('/api/sellers/banking', async (req, res) => {
 
 // Auth routes
 app.post('/api/auth/register', async (req, res) => {
-  const { email, password, role, firstName, lastName, phone, address } = req.body || {};
-  if (!email || !password || !firstName || !lastName) {
-    return res.status(400).json({ error: 'Email, password, first name, and last name are required' });
-  }
-  
   try {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().min(6).required(),
+      firstName: Joi.string().allow('').optional(),
+      lastName: Joi.string().allow('').optional(),
+      role: Joi.string().valid('user', 'seller').default('user'),
+      phone: Joi.string().allow('').optional(),
+      address: Joi.string().allow('').optional()
+    });
+    const { error, value } = schema.validate(req.body || {});
+    if (error) return res.status(400).json({ success: false, message: error.message });
+
+    const { email, password, firstName, lastName, role, phone, address } = value;
+
     if (mongoConnected && UserModel) {
-      // Check if user already exists
       const existingUser = await UserModel.findOne({ email: email.toLowerCase() });
-      if (existingUser) {
-        return res.status(409).json({ error: 'User already exists' });
-      }
-      
-      // Create new user
+      if (existingUser) return res.status(400).json({ success: false, message: 'Email already registered' });
+
+      const hashedPassword = await bcrypt.hash(String(password), 10);
       const newUser = new UserModel({
         email: email.toLowerCase(),
-        password: String(password), // In production, hash this password
-        firstName: String(firstName),
-        lastName: String(lastName),
-        phone: phone ? String(phone) : undefined,
-        address: address ? String(address) : undefined,
+        password: hashedPassword,
+        firstName: firstName || '',
+        lastName: lastName || '',
+        phone: phone || '',
+        address: address || '',
         role: role || 'user'
       });
-      
       await newUser.save();
-      
-      // Create session
-      const sid = uuidv4();
-      sessionIdToUserId.set(sid, newUser._id.toString());
-      res.cookie('sid', sid, { httpOnly: true, sameSite: 'lax' });
-      
-      res.json({ 
-        data: { 
-          ID: newUser._id, 
-          Name: `${newUser.firstName} ${newUser.lastName}`, 
-          Email: newUser.email, 
-          Roles: newUser.role,
-          FirstName: newUser.firstName,
-          LastName: newUser.lastName
-        } 
-      });
-      return;
+      return res.status(201).json({ success: true, message: 'User registered', role: newUser.role });
     }
-    
-    // Fallback to JSON storage
-    const users = readJson(usersFile);
-    if (users.some((u) => u.Email?.toLowerCase() === String(email).toLowerCase())) {
-      return res.status(409).json({ error: 'User already exists' });
+
+    // Fallback JSON storage
+    const users = readJson(usersFile) || [];
+    if (users.some((u) => (u.Email || '').toLowerCase() === String(email).toLowerCase())) {
+      return res.status(400).json({ success: false, message: 'Email already registered' });
     }
-    const nextId = users.length ? Math.max(...users.map((u) => u.ID)) + 1 : 1;
+    const hashed = await bcrypt.hash(String(password), 10);
+    const nextId = users.length ? Math.max(...users.map((u) => u.ID || 0)) + 1 : 1;
     const newUser = {
       ID: nextId,
-      Name: `${String(firstName).trim()} ${String(lastName).trim()}`.trim(),
-      FirstName: String(firstName),
-      LastName: String(lastName),
-      Phone: phone ? String(phone) : undefined,
-      Address: address ? String(address) : undefined,
-      Email: String(email),
+      Name: `${String(firstName || '').trim()} ${String(lastName || '').trim()}`.trim(),
+      FirstName: String(firstName || ''),
+      LastName: String(lastName || ''),
+      Phone: phone ? String(phone) : '',
+      Address: address ? String(address) : '',
+      Email: String(email).toLowerCase(),
       Roles: role || 'user',
-      password: String(password)
+      password: hashed
     };
     users.push(newUser);
     writeJson(usersFile, users);
-    const sid = uuidv4();
-    sessionIdToUserId.set(sid, newUser.ID);
-    res.cookie('sid', sid, { httpOnly: true, sameSite: 'lax' });
-    res.json({ data: { ID: newUser.ID, Name: newUser.Name, Email: newUser.Email, Roles: newUser.Roles } });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Failed to register user' });
+    return res.status(201).json({ success: true, message: 'User registered', role: newUser.Roles });
+  } catch (err) {
+    console.error('Register error', err);
+    return res.status(500).json({ success: false, message: 'Registration failed' });
   }
 });
 
 app.post('/api/auth/login', async (req, res) => {
-  const { email, password, role } = req.body || {};
-  if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
-  
   try {
+    const { email, password } = req.body || {};
+    if (!email || !password) return res.status(400).json({ success: false, message: 'Email and password required' });
+
     if (mongoConnected && UserModel) {
-      const user = await UserModel.findOne({ email: email.toLowerCase() });
-      if (!user || user.password !== String(password)) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
-      
-      // Check if user role matches the requested role
-      if (role && user.role !== role) {
-        return res.status(403).json({ error: `Access denied. This account is registered as ${user.role}, not ${role}` });
-      }
-      
-      const sid = uuidv4();
-      sessionIdToUserId.set(sid, user._id.toString());
-      res.cookie('sid', sid, { httpOnly: true, sameSite: 'lax' });
-      
-      const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '1d' });
-      res.json({ 
-        data: { 
-          ID: user._id, 
-          Name: `${user.firstName} ${user.lastName}`, 
-          Email: user.email, 
-          Roles: user.role,
-          FirstName: user.firstName,
-          LastName: user.lastName,
-          token,
-          role: user.role
-        } 
-      });
-      return;
+      const user = await UserModel.findOne({ email: String(email).toLowerCase() });
+      if (!user) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+      const match = await bcrypt.compare(String(password), user.password);
+      if (!match) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+      const token = jwt.sign({ id: user._id, role: user.role || 'user' }, JWT_SECRET, { expiresIn: '1d' });
+      return res.json({ success: true, token, role: user.role || 'user' });
     }
-    
-    // Fallback to JSON storage
-    const users = readJson(usersFile);
-    const user = users.find((u) => u.Email?.toLowerCase() === String(email).toLowerCase());
-    if (!user || user.password !== String(password)) return res.status(401).json({ error: 'Invalid credentials' });
-    
-    // Check if user role matches the requested role
-    if (role && user.Roles !== role) {
-      return res.status(403).json({ error: `Access denied. This account is registered as ${user.Roles}, not ${role}` });
-    }
-    const sid = uuidv4();
-    sessionIdToUserId.set(sid, user.ID);
-    res.cookie('sid', sid, { httpOnly: true, sameSite: 'lax' });
-    const token = jwt.sign({ id: user.ID, role: user.Roles }, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '1d' });
-    res.json({ data: { ID: user.ID, Name: user.Name, Email: user.Email, Roles: user.Roles, token, role: user.Roles } });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Failed to login' });
+
+    const users = readJson(usersFile) || [];
+    const user = users.find((u) => String(u.Email).toLowerCase() === String(email).toLowerCase());
+    if (!user) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    const match = await bcrypt.compare(String(password), user.password);
+    if (!match) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    const token = jwt.sign({ id: user.ID, role: user.Roles || 'user' }, JWT_SECRET, { expiresIn: '1d' });
+    return res.json({ success: true, token, role: user.Roles || 'user' });
+  } catch (err) {
+    console.error('Login error', err);
+    return res.status(500).json({ success: false, message: 'Login failed' });
   }
 });
 
@@ -547,49 +508,9 @@ app.get('/api/auth/me', async (req, res) => {
 });
 
 // Minimal seller routes for JWT-protected endpoints used by axios in simple pages
-app.post('/seller/shop-details', async (req, res) => {
-  try {
-    const user = await currentUser(req);
-    if (!user) return res.status(401).json({ success: false, message: 'Authentication required' });
-    if (user.Roles !== 'seller') return res.status(403).json({ success: false, message: 'Access denied: Sellers only' });
-    const sellersFile = tableIdToFile[39101];
-    const sellers = readJson(sellersFile);
-    const idx = sellers.findIndex((s) => s.userId === user.ID);
-    const payload = {
-      userId: user.ID,
-      business_name: req.body?.shopName || 'My Shop',
-      address: req.body?.address || '',
-      specialties: req.body?.category || ''
-    };
-    if (idx >= 0) sellers[idx] = { ...sellers[idx], ...payload }; else sellers.push({ id: sellers.length + 1, ...payload, created_at: new Date().toISOString() });
-    writeJson(sellersFile, sellers);
-    res.json({ success: true, message: 'Shop details saved' });
-  } catch (e) {
-    res.status(500).json({ success: false, message: 'Failed to save shop details' });
-  }
-});
-
-app.post('/seller/banking-details', async (req, res) => {
-  try {
-    const user = await currentUser(req);
-    if (!user) return res.status(401).json({ success: false, message: 'Authentication required' });
-    if (user.Roles !== 'seller') return res.status(403).json({ success: false, message: 'Access denied: Sellers only' });
-    const items = readJson(sellerBankingFile);
-    const idx = items.findIndex((i) => i.userId === user.ID);
-    const rec = {
-      userId: user.ID,
-      accountNumber: String(req.body?.accountNumber || ''),
-      ifsc: String(req.body?.ifsc || ''),
-      bankName: String(req.body?.bankName || ''),
-      updatedAt: new Date().toISOString()
-    };
-    if (idx >= 0) items[idx] = { ...items[idx], ...rec }; else items.push(rec);
-    writeJson(sellerBankingFile, items);
-    res.json({ success: true, message: 'Banking details saved' });
-  } catch (e) {
-    res.status(500).json({ success: false, message: 'Failed to save banking details' });
-  }
-});
+// Mount JWT-protected seller routes
+import sellerRoutes from './routes/seller.js';
+app.use('/api/seller', sellerRoutes);
 
 // Sellers API
 app.post('/api/sellers', upload.fields([

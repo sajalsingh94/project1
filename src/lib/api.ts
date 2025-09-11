@@ -8,9 +8,11 @@ export type TablePageRequest = {
 
 async function request<T>(url: string, options: RequestInit = {}): Promise<{ data?: T; error?: any }> {
   try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const authHeader = token ? { Authorization: `Bearer ${token}` } : {} as any;
     const res = await fetch(url, {
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      headers: { 'Content-Type': 'application/json', ...authHeader, ...(options.headers || {}) },
       ...options
     });
     const json = await res.json().catch(() => ({}));

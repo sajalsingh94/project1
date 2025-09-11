@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../lib/api';
 
 const BankingDetails: React.FC = () => {
   const [accountNumber, setAccountNumber] = useState('');
@@ -8,11 +8,12 @@ const BankingDetails: React.FC = () => {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    await axios.post('/seller/banking-details', { accountNumber, ifsc, bankName }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    alert('Banking details saved successfully');
+    const res = await axios.post('/api/seller/banking-details', { accountNumber, ifsc, bankName });
+    if ((res as any)?.data?.success) {
+      alert('Banking details saved successfully');
+    } else {
+      alert((res as any)?.data?.message || 'Failed to save');
+    }
   }
 
   return (
