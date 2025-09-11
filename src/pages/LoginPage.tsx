@@ -110,7 +110,7 @@ const LoginPage: React.FC = () => {
     }
     setIsSubmitting(true);
     try {
-      const { error } = await window.ezsite?.apis?.login({ email, password, role });
+      const { data, error } = await window.ezsite?.apis?.login({ email, password, role });
       if (error) {
         toast({
           title: "Login Failed",
@@ -119,18 +119,14 @@ const LoginPage: React.FC = () => {
         });
         return;
       }
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!"
-      });
-      
-      // Trigger auth state refresh across the app
-      window.dispatchEvent(new CustomEvent('authStateChanged'));
-      
-      // Small delay to ensure auth state is updated
-      setTimeout(() => {
-        navigate('/');
-      }, 100);
+      // Persist auth like requested
+      if (data && (data as any).token) {
+        localStorage.setItem('token', (data as any).token);
+      }
+      if (data && ((data as any).role || (data as any).Roles)) {
+        localStorage.setItem('role', (data as any).role || (data as any).Roles);
+      }
+      navigate('/');
     } catch (err) {
       console.error('Login error', err);
       toast({

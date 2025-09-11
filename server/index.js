@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -229,6 +230,35 @@ function ensureSeed() {
 ensureSeed();
 
 async function currentUser(req) {
+  // Prefer JWT if provided
+  const authHeader = req.headers.authorization || '';
+  if (authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret');
+      const userId = decoded.id || decoded.ID || decoded.userId;
+      const role = decoded.role || decoded.Roles;
+      if (mongoConnected && UserModel && userId) {
+        const user = await UserModel.findById(userId);
+        if (!user) return null;
+        return {
+          ID: user._id,
+          Name: `${user.firstName} ${user.lastName}`,
+          Email: user.email,
+          Roles: role || user.role,
+          FirstName: user.firstName,
+          LastName: user.lastName
+        };
+      }
+      if (userId) {
+        const users = readJson(usersFile);
+        const jsonUser = users.find((u) => String(u.ID) === String(userId));
+        if (jsonUser) return jsonUser;
+      }
+    } catch {}
+  }
+
+  // Fallback to cookie session
   const sid = req.cookies.sid;
   if (!sid) return null;
   const userId = sessionIdToUserId.get(sid);
@@ -467,6 +497,7 @@ app.post('/api/auth/login', async (req, res) => {
       sessionIdToUserId.set(sid, user._id.toString());
       res.cookie('sid', sid, { httpOnly: true, sameSite: 'lax' });
       
+      const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '1d' });
       res.json({ 
         data: { 
           ID: user._id, 
@@ -474,7 +505,9 @@ app.post('/api/auth/login', async (req, res) => {
           Email: user.email, 
           Roles: user.role,
           FirstName: user.firstName,
-          LastName: user.lastName
+          LastName: user.lastName,
+          token,
+          role: user.role
         } 
       });
       return;
@@ -492,7 +525,8 @@ app.post('/api/auth/login', async (req, res) => {
     const sid = uuidv4();
     sessionIdToUserId.set(sid, user.ID);
     res.cookie('sid', sid, { httpOnly: true, sameSite: 'lax' });
-    res.json({ data: { ID: user.ID, Name: user.Name, Email: user.Email, Roles: user.Roles } });
+    const token = jwt.sign({ id: user.ID, role: user.Roles }, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '1d' });
+    res.json({ data: { ID: user.ID, Name: user.Name, Email: user.Email, Roles: user.Roles, token, role: user.Roles } });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Failed to login' });
@@ -510,6 +544,51 @@ app.get('/api/auth/me', async (req, res) => {
   const user = await currentUser(req);
   if (!user) return res.status(401).json({ error: 'Not authenticated' });
   res.json({ data: { ID: user.ID, Name: user.Name, Email: user.Email, Roles: user.Roles } });
+});
+
+// Minimal seller routes for JWT-protected endpoints used by axios in simple pages
+app.post('/seller/shop-details', async (req, res) => {
+  try {
+    const user = await currentUser(req);
+    if (!user) return res.status(401).json({ success: false, message: 'Authentication required' });
+    if (user.Roles !== 'seller') return res.status(403).json({ success: false, message: 'Access denied: Sellers only' });
+    const sellersFile = tableIdToFile[39101];
+    const sellers = readJson(sellersFile);
+    const idx = sellers.findIndex((s) => s.userId === user.ID);
+    const payload = {
+      userId: user.ID,
+      business_name: req.body?.shopName || 'My Shop',
+      address: req.body?.address || '',
+      specialties: req.body?.category || ''
+    };
+    if (idx >= 0) sellers[idx] = { ...sellers[idx], ...payload }; else sellers.push({ id: sellers.length + 1, ...payload, created_at: new Date().toISOString() });
+    writeJson(sellersFile, sellers);
+    res.json({ success: true, message: 'Shop details saved' });
+  } catch (e) {
+    res.status(500).json({ success: false, message: 'Failed to save shop details' });
+  }
+});
+
+app.post('/seller/banking-details', async (req, res) => {
+  try {
+    const user = await currentUser(req);
+    if (!user) return res.status(401).json({ success: false, message: 'Authentication required' });
+    if (user.Roles !== 'seller') return res.status(403).json({ success: false, message: 'Access denied: Sellers only' });
+    const items = readJson(sellerBankingFile);
+    const idx = items.findIndex((i) => i.userId === user.ID);
+    const rec = {
+      userId: user.ID,
+      accountNumber: String(req.body?.accountNumber || ''),
+      ifsc: String(req.body?.ifsc || ''),
+      bankName: String(req.body?.bankName || ''),
+      updatedAt: new Date().toISOString()
+    };
+    if (idx >= 0) items[idx] = { ...items[idx], ...rec }; else items.push(rec);
+    writeJson(sellerBankingFile, items);
+    res.json({ success: true, message: 'Banking details saved' });
+  } catch (e) {
+    res.status(500).json({ success: false, message: 'Failed to save banking details' });
+  }
 });
 
 // Sellers API
