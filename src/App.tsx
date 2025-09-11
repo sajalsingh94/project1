@@ -2,7 +2,7 @@ import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -25,6 +25,17 @@ import SellerBankingPage from "./pages/SellerBankingPage";
 import BecomeSellerPage from "./pages/BecomeSellerPage";
 import SellerDashboardPage from "./pages/SellerDashboardPage";
 import './styles/design-system.css';
+import Dashboard from './pages/Dashboard';
+import ShopDetails from './pages/ShopDetails';
+import BankingDetails from './pages/BankingDetails';
+
+function ProtectedSellerRoute({ children }: { children: React.ReactElement }) {
+  const role = typeof window !== 'undefined' ? localStorage.getItem('role') : null;
+  if (role !== 'seller') {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -91,6 +102,22 @@ const App = () => (
                       <ProtectedRoute allowedRoles={['seller']}>
                         <SellerBankingPage />
                       </ProtectedRoute>
+                    } />
+                    {/* Additional simple seller routes */}
+                    <Route path="/dashboard" element={
+                      <ProtectedSellerRoute>
+                        <Dashboard />
+                      </ProtectedSellerRoute>
+                    } />
+                    <Route path="/dashboard/shop-details" element={
+                      <ProtectedSellerRoute>
+                        <ShopDetails />
+                      </ProtectedSellerRoute>
+                    } />
+                    <Route path="/dashboard/banking-details" element={
+                      <ProtectedSellerRoute>
+                        <BankingDetails />
+                      </ProtectedSellerRoute>
                     } />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />

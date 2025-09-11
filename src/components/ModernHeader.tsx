@@ -88,12 +88,17 @@ const ModernHeader: React.FC = () => {
     try {
       const logout = window.ezsite?.apis?.logout;
       const { error } = logout ? await logout() : await api.auth.logout();
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
       if (!error) {
         setUser(null);
         window.location.href = '/';
       }
     } catch (error) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
       console.error('Logout error:', error);
+      window.location.href = '/';
     }
   };
 
@@ -208,7 +213,7 @@ const ModernHeader: React.FC = () => {
                 </motion.div>
               );
             })}
-            {user?.Roles === 'seller' && (
+            {(user?.Roles === 'seller' || localStorage.getItem('role') === 'seller') && (
               <motion.div
                 key="seller-dashboard"
                 initial={{ opacity: 0, y: -20 }}
@@ -509,7 +514,7 @@ const ModernHeader: React.FC = () => {
                     </motion.div>
                   );
                 })}
-                {user?.Roles === 'seller' && (
+                {(user?.Roles === 'seller' || localStorage.getItem('role') === 'seller') && (
                   <motion.div
                     key="seller-dashboard-mobile"
                     initial={{ opacity: 0, x: -20 }}
