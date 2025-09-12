@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, Facebook, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
+import PasswordStrength from '@/components/PasswordStrength';
 
 const emailSchema = z.string().email();
 const passwordSchema = z.string().min(8);
@@ -300,6 +301,7 @@ const SignUpPage: React.FC = () => {
                   </div>
                 ))}
               </div>
+              <PasswordStrength password={password} className="mt-3" />
             </div>
 
             <div className="space-y-2">

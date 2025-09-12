@@ -18,6 +18,8 @@ import AboutPage from "./pages/AboutPage";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import PaymentPage from "./pages/PaymentPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
@@ -91,6 +93,8 @@ const App = () => (
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<SignUpPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                     <Route path="/become-seller" element={
                       <ProtectedRoute allowedRoles={['user']}>
                         <BecomeSellerPage />
