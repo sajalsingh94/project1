@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { SEOHead } from '@/components/SEOHead';
+import SEOHead from '@/components/SEOHead';
 import ProductCard from '@/components/ProductCard';
 import { useToast } from '@/hooks/use-toast';
 
@@ -56,10 +56,14 @@ interface DietaryTag {
 interface Product {
   id: number;
   name: string;
+  description: string;
   price: number;
+  original_price: number;
   main_image: string;
   rating: number;
+  review_count: number;
   seller_id: number;
+  stock_quantity: number;
 }
 
 const RecipeDetailPage: React.FC = () => {
@@ -308,7 +312,7 @@ const RecipeDetailPage: React.FC = () => {
               )}
             </div>
             
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+            <h1 className="font-bold text-white mb-4">
               {recipe.name}
             </h1>
             
