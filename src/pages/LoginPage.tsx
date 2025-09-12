@@ -92,6 +92,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<RoleType>('user');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [remember, setRemember] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -124,7 +125,14 @@ const LoginPage: React.FC = () => {
       // Persist auth
       const token = (data as any)?.token;
       const userRole = (data as any)?.role || (data as any)?.Roles;
-      if (token) localStorage.setItem('token', token);
+      if (token) {
+        localStorage.setItem('token', token);
+        if (!remember) {
+          window.addEventListener('beforeunload', () => {
+            try { localStorage.removeItem('token'); localStorage.removeItem('role'); } catch {}
+          }, { once: true });
+        }
+      }
       if (userRole) localStorage.setItem('role', userRole);
       navigate('/');
     } catch (err) {
@@ -203,7 +211,11 @@ const LoginPage: React.FC = () => {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              <div className="text-right">
+              <div className="flex items-center justify-between">
+                <label className="inline-flex items-center gap-2 text-sm text-gray-600">
+                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="rounded" />
+                  Remember me
+                </label>
                 <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
                   Forgot password?
                 </Link>
