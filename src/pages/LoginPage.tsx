@@ -8,7 +8,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Mail, Lock, User, Facebook, Instagram } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Facebook, Instagram, Eye, EyeOff } from 'lucide-react';
+import { api } from '@/lib/api';
 
 const emailSchema = z.string().email();
 const passwordSchema = z.string().min(6);
@@ -91,6 +92,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<RoleType>('user');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -110,22 +112,20 @@ const LoginPage: React.FC = () => {
     }
     setIsSubmitting(true);
     try {
-      const res: any = await window.ezsite?.apis?.login({ email, password, role });
-      if (!res || res.error || res.success === false) {
+      const { data, error } = await api.auth.login({ email, password, role });
+      if (error || !data) {
         toast({
           title: "Login Failed",
-          description: res?.message || res?.error || 'Invalid email or password',
+          description: error || 'Invalid email or password',
           variant: "destructive"
         });
         return;
       }
       // Persist auth
-      if (res.token) {
-        localStorage.setItem('token', res.token);
-      }
-      if (res.role || res.Roles) {
-        localStorage.setItem('role', res.role || res.Roles);
-      }
+      const token = (data as any)?.token;
+      const userRole = (data as any)?.role || (data as any)?.Roles;
+      if (token) localStorage.setItem('token', token);
+      if (userRole) localStorage.setItem('role', userRole);
       navigate('/');
     } catch (err) {
       console.error('Login error', err);
@@ -189,12 +189,19 @@ const LoginPage: React.FC = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="pl-10 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 pr-10 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
               <div className="text-right">
                 <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
