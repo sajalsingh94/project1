@@ -38,7 +38,12 @@ yarn
 pnpm install
 ```
 
-3. Start the development server:
+3. Create a .env file (see .env.example):
+```
+cp .env.example .env
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 # or
@@ -47,7 +52,27 @@ yarn dev
 pnpm dev
 ```
 
-4. Open your browser and visit `http://localhost:5173`
+5. Open your browser and visit `http://localhost:5173`
+
+## Environment variables
+
+Required in production:
+- `JWT_SECRET`
+- `REFRESH_TOKEN_SECRET`
+
+Optional:
+- `MONGODB_URI`, `MONGODB_DB`
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` (for password reset and email verification)
+- `APP_BASE_URL` (used to build action links in emails)
+
+## Auth notes
+
+- Access token expires in 15 minutes and is returned on login as `data.token`.
+- Refresh token is an HttpOnly cookie (`refresh_token`), Secure, SameSite=Lax.
+- `POST /api/auth/refresh` rotates and returns a new access token.
+- `POST /api/auth/logout` clears the refresh cookie.
+- Password reset: `POST /api/auth/forgot-password`, then `POST /api/auth/reset-password/:token`.
+- Email verification: link sent on register; verify via `GET /api/auth/verify-email/:token`.
 
 ## Project Structure
 

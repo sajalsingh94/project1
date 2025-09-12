@@ -18,17 +18,42 @@ function buildUrl(path: string): string {
   return `${BASE_URL}/${path}`;
 }
 
+async function refreshAccessToken(): Promise<string | null> {
+  try {
+    const res = await fetch(buildUrl('/auth/refresh'), { method: 'POST', credentials: 'include' });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok && json?.success && json?.data?.token) {
+      localStorage.setItem('token', json.data.token);
+      return json.data.token as string;
+    }
+  } catch {}
+  return null;
+}
+
 async function request<T>(url: string, options: RequestInit = {}): Promise<ApiResult<T>> {
   try {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const authHeader = token ? { Authorization: `Bearer ${token}` } : {} as any;
-    const res = await fetch(buildUrl(url), {
+    let res = await fetch(buildUrl(url), {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json', ...authHeader, ...(options.headers || {}) },
       ...options
     });
+    // Attempt auto-refresh on 401
+    if (res.status === 401) {
+      const newToken = await refreshAccessToken();
+      if (newToken) {
+        res = await fetch(buildUrl(url), {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${newToken}`, ...(options.headers || {}) },
+          ...options
+        });
+      }
+    }
     const json = await res.json().catch(() => ({}));
-    if (!res.ok) return { error: json?.error || json?.message || res.statusText };
+    if (!res.ok || json?.success === false) {
+      return { error: json?.error || json?.message || res.statusText };
+    }
     const data = (json?.data !== undefined ? json.data : json) as T;
     return { data };
   } catch (error) {
@@ -42,8 +67,14 @@ export const api = {
       request('/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
     login: (payload: { email: string; password: string; role?: string }) =>
       request('/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
-    logout: () => request('/auth/logout', { method: 'POST' }),
-    me: () => request('/auth/me')
+    logout: async () => {
+      const res = await request('/auth/logout', { method: 'POST' });
+      try { localStorage.removeItem('token'); localStorage.removeItem('role'); } catch {}
+      return res;
+    },
+    me: () => request('/auth/me'),
+    forgotPassword: (payload: { email: string }) => request('/auth/forgot-password', { method: 'POST', body: JSON.stringify(payload) }),
+    resetPassword: (token: string, payload: { password: string }) => request(`/auth/reset-password/${token}`, { method: 'POST', body: JSON.stringify(payload) })
   },
   sellers: {
     create: async (payload: any) => {

@@ -10,6 +10,9 @@ import path from 'path';
 import multer from 'multer';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import nodemailer from 'nodemailer';
 
 // Load environment variables
 dotenv.config();
@@ -18,11 +21,22 @@ const __dirnameCurrent = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-prod';
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'change-me-refresh-in-prod';
+
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
+    // Fail fast in production if secrets missing
+    console.error('[server] Missing JWT secrets in production');
+    process.exit(1);
+  }
+}
 
 // CORS for Vite dev server
 app.use(cors({ origin: [/^http:\/\/localhost:\d+$/, /^http:\/\/\[::\]:\d+$/], credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(helmet());
+app.use(rateLimit({ windowMs: 60 * 1000, max: 60, standardHeaders: true, legacyHeaders: false }));
 
 // Simple in-memory session store
 const sessionIdToUserId = new Map();
@@ -64,6 +78,7 @@ async function connectMongoIfConfigured() {
       phone: String,
       address: String,
       role: { type: String, enum: ['user', 'seller'], default: 'user' },
+      isVerified: { type: Boolean, default: false },
       isActive: { type: Boolean, default: true },
       createdAt: { type: Date, default: Date.now },
       updatedAt: { type: Date, default: Date.now }
@@ -141,7 +156,15 @@ const storage = multer.diskStorage({
     cb(null, `${ts}-${safeOriginal}`);
   }
 });
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    if (allowed.includes(file.mimetype)) return cb(null, true);
+    return cb(new Error('Invalid file type'));
+  }
+});
 
 const tableIdToFile = {
   39097: 'categories.json',
@@ -301,12 +324,12 @@ app.use('/api/uploads', express.static(path.join(__dirnameCurrent, 'uploads')));
 app.post('/api/upload', upload.single('image'), (req, res) => {
   try {
     const file = req.file;
-    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+    if (!file) return res.status(400).json({ success: false, error: 'No file uploaded' });
     const url = `/api/uploads/${file.filename}`;
-    res.json({ data: { url } });
+    res.json({ success: true, data: { url } });
   } catch (error) {
     console.error('Upload error', error);
-    res.status(500).json({ error: 'Failed to upload image' });
+    res.status(500).json({ success: false, error: 'Failed to upload image' });
   }
 });
 
@@ -321,7 +344,7 @@ app.post('/api/orders', (req, res) => {
   const created = { id, createdAt: new Date().toISOString(), ...order };
   orders.push(created);
   writeJson(ordersFile, orders);
-  res.json({ data: { id } });
+  res.json({ success: true, data: { id } });
 });
 
 // Simple payment simulation - always succeeds
@@ -329,9 +352,9 @@ app.post('/api/payments/simulate', (req, res) => {
   try {
     const payload = req.body || {};
     const paymentId = uuidv4();
-    res.json({ data: { success: true, paymentId, echo: payload } });
+    res.json({ success: true, data: { success: true, paymentId, echo: payload } });
   } catch (error) {
-    res.status(500).json({ error: 'Payment simulation failed' });
+    res.status(500).json({ success: false, error: 'Payment simulation failed' });
   }
 });
 
@@ -343,14 +366,14 @@ if (!fs.existsSync(path.join(dataDir, sellerBankingFile))) writeJson(sellerBanki
 app.get('/api/sellers/banking', async (req, res) => {
   try {
     const user = await currentUser(req);
-    if (!user) return res.status(401).json({ error: 'Authentication required' });
+    if (!user) return res.status(401).json({ success: false, error: 'Authentication required' });
     const items = readJson(sellerBankingFile);
     const record = items.find((i) => i.userId === user.ID);
-    if (!record) return res.json({ data: null });
-    res.json({ data: record });
+    if (!record) return res.json({ success: true, data: null });
+    res.json({ success: true, data: record });
   } catch (error) {
     console.error('Get banking error', error);
-    res.status(500).json({ error: 'Failed to get banking details' });
+    res.status(500).json({ success: false, error: 'Failed to get banking details' });
   }
 });
 
@@ -358,7 +381,7 @@ app.get('/api/sellers/banking', async (req, res) => {
 app.post('/api/sellers/banking', async (req, res) => {
   try {
     const user = await currentUser(req);
-    if (!user) return res.status(401).json({ error: 'Authentication required' });
+    if (!user) return res.status(401).json({ success: false, error: 'Authentication required' });
 
     const {
       accountHolderName,
@@ -371,13 +394,13 @@ app.post('/api/sellers/banking', async (req, res) => {
 
     // Basic validation
     if (!accountHolderName || !bankAccountNumber || !ifsc || !bankName) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ success: false, error: 'Missing required fields' });
     }
     if (!/^\d{6,18}$/.test(String(bankAccountNumber))) {
-      return res.status(400).json({ error: 'Invalid bank account number' });
+      return res.status(400).json({ success: false, error: 'Invalid bank account number' });
     }
     if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(String(ifsc).toUpperCase())) {
-      return res.status(400).json({ error: 'Invalid IFSC format' });
+      return res.status(400).json({ success: false, error: 'Invalid IFSC format' });
     }
 
     const items = readJson(sellerBankingFile);
@@ -398,19 +421,66 @@ app.post('/api/sellers/banking', async (req, res) => {
       items.push({ ...payload, createdAt: new Date().toISOString() });
     }
     writeJson(sellerBankingFile, items);
-    res.json({ data: true });
+    res.json({ success: true, data: true });
   } catch (error) {
     console.error('Save banking error', error);
-    res.status(500).json({ error: 'Failed to save banking details' });
+    res.status(500).json({ success: false, error: 'Failed to save banking details' });
   }
 });
 
 // Auth routes
+// Helpers for tokens and email
+function signAccessToken(payload) {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
+}
+function signRefreshToken(payload) {
+  return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+}
+function setRefreshCookie(res, token) {
+  const isProd = process.env.NODE_ENV === 'production';
+  res.cookie('refresh_token', token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax',
+    path: '/api/auth',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+}
+
+function clearRefreshCookie(res) {
+  const isProd = process.env.NODE_ENV === 'production';
+  res.clearCookie('refresh_token', { httpOnly: true, secure: isProd, sameSite: 'lax', path: '/api/auth' });
+}
+
+function buildTransport() {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) return null;
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: Number(SMTP_PORT),
+    secure: Number(SMTP_PORT) === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS }
+  });
+}
+
+async function sendEmailSafe(options) {
+  try {
+    const transporter = buildTransport();
+    if (!transporter) {
+      console.log('[server] SMTP not configured, email would be sent:', options.subject);
+      return;
+    }
+    await transporter.sendMail(options);
+  } catch (e) {
+    console.warn('[server] Email sending failed:', e?.message || e);
+  }
+}
+
 app.post('/api/auth/register', async (req, res) => {
   try {
     const schema = Joi.object({
       email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
+      password: Joi.string().min(8).max(128).pattern(/[A-Z]/).pattern(/[a-z]/).pattern(/[0-9]/).required(),
       firstName: Joi.string().allow('').optional(),
       lastName: Joi.string().allow('').optional(),
       role: Joi.string().valid('user', 'seller').default('user'),
@@ -418,7 +488,7 @@ app.post('/api/auth/register', async (req, res) => {
       address: Joi.string().allow('').optional()
     });
     const { error, value } = schema.validate(req.body || {});
-    if (error) return res.status(400).json({ success: false, message: error.message });
+    if (error) return res.status(400).json({ success: false, error: error.message });
 
     const { email, password, firstName, lastName, role, phone, address } = value;
 
@@ -434,16 +504,21 @@ app.post('/api/auth/register', async (req, res) => {
         lastName: lastName || '',
         phone: phone || '',
         address: address || '',
-        role: role || 'user'
+        role: role || 'user',
+        isVerified: false
       });
       await newUser.save();
-      return res.status(201).json({ success: true, message: 'User registered', role: newUser.role });
+      const verifyToken = jwt.sign({ id: newUser._id, action: 'verify' }, JWT_SECRET, { expiresIn: '1d' });
+      const base = process.env.APP_BASE_URL || 'http://localhost:5173';
+      const link = `${base}/verify-email/${verifyToken}`;
+      await sendEmailSafe({ from: process.env.SMTP_FROM || 'noreply@example.com', to: newUser.email, subject: 'Verify your email', text: `Verify your email: ${link}` });
+      return res.status(201).json({ success: true, data: { role: newUser.role }, message: 'User registered. Please verify your email.' });
     }
 
     // Fallback JSON storage
     const users = readJson(usersFile) || [];
     if (users.some((u) => (u.Email || '').toLowerCase() === String(email).toLowerCase())) {
-      return res.status(400).json({ success: false, message: 'Email already registered' });
+      return res.status(400).json({ success: false, error: 'Email already registered' });
     }
     const hashed = await bcrypt.hash(String(password), 10);
     const nextId = users.length ? Math.max(...users.map((u) => u.ID || 0)) + 1 : 1;
@@ -456,41 +531,50 @@ app.post('/api/auth/register', async (req, res) => {
       Address: address ? String(address) : '',
       Email: String(email).toLowerCase(),
       Roles: role || 'user',
-      password: hashed
+      password: hashed,
+      isVerified: false
     };
     users.push(newUser);
     writeJson(usersFile, users);
-    return res.status(201).json({ success: true, message: 'User registered', role: newUser.Roles });
+    const verifyToken = jwt.sign({ id: newUser.ID, action: 'verify' }, JWT_SECRET, { expiresIn: '1d' });
+    const base = process.env.APP_BASE_URL || 'http://localhost:5173';
+    const link = `${base}/verify-email/${verifyToken}`;
+    await sendEmailSafe({ from: process.env.SMTP_FROM || 'noreply@example.com', to: newUser.Email, subject: 'Verify your email', text: `Verify your email: ${link}` });
+    return res.status(201).json({ success: true, data: { role: newUser.Roles }, message: 'User registered. Please verify your email.' });
   } catch (err) {
     console.error('Register error', err);
-    return res.status(500).json({ success: false, message: 'Registration failed' });
+    return res.status(500).json({ success: false, error: 'Registration failed' });
   }
 });
 
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    if (!email || !password) return res.status(400).json({ success: false, message: 'Email and password required' });
+    if (!email || !password) return res.status(400).json({ success: false, error: 'Email and password required' });
 
     if (mongoConnected && UserModel) {
       const user = await UserModel.findOne({ email: String(email).toLowerCase() });
-      if (!user) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+      if (!user) return res.status(400).json({ success: false, error: 'Invalid credentials' });
       const match = await bcrypt.compare(String(password), user.password);
-      if (!match) return res.status(400).json({ success: false, message: 'Invalid credentials' });
-      const token = jwt.sign({ id: user._id, role: user.role || 'user' }, JWT_SECRET, { expiresIn: '1d' });
-      return res.json({ success: true, token, role: user.role || 'user' });
+      if (!match) return res.status(400).json({ success: false, error: 'Invalid credentials' });
+      const access = signAccessToken({ id: user._id, role: user.role || 'user' });
+      const refresh = signRefreshToken({ id: user._id, role: user.role || 'user' });
+      setRefreshCookie(res, refresh);
+      return res.json({ success: true, data: { token: access, role: user.role || 'user' } });
     }
 
     const users = readJson(usersFile) || [];
     const user = users.find((u) => String(u.Email).toLowerCase() === String(email).toLowerCase());
-    if (!user) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    if (!user) return res.status(400).json({ success: false, error: 'Invalid credentials' });
     const match = await bcrypt.compare(String(password), user.password);
-    if (!match) return res.status(400).json({ success: false, message: 'Invalid credentials' });
-    const token = jwt.sign({ id: user.ID, role: user.Roles || 'user' }, JWT_SECRET, { expiresIn: '1d' });
-    return res.json({ success: true, token, role: user.Roles || 'user' });
+    if (!match) return res.status(400).json({ success: false, error: 'Invalid credentials' });
+    const access = signAccessToken({ id: user.ID, role: user.Roles || 'user' });
+    const refresh = signRefreshToken({ id: user.ID, role: user.Roles || 'user' });
+    setRefreshCookie(res, refresh);
+    return res.json({ success: true, data: { token: access, role: user.Roles || 'user' } });
   } catch (err) {
     console.error('Login error', err);
-    return res.status(500).json({ success: false, message: 'Login failed' });
+    return res.status(500).json({ success: false, error: 'Login failed' });
   }
 });
 
@@ -498,13 +582,126 @@ app.post('/api/auth/logout', (req, res) => {
   const sid = req.cookies.sid;
   if (sid) sessionIdToUserId.delete(sid);
   res.clearCookie('sid');
-  res.json({ data: true });
+  clearRefreshCookie(res);
+  res.json({ success: true, data: true });
 });
 
 app.get('/api/auth/me', async (req, res) => {
   const user = await currentUser(req);
-  if (!user) return res.status(401).json({ error: 'Not authenticated' });
-  res.json({ data: { ID: user.ID, Name: user.Name, Email: user.Email, Roles: user.Roles } });
+  if (!user) return res.status(401).json({ success: false, error: 'Not authenticated' });
+  res.json({ success: true, data: { ID: user.ID, Name: user.Name, Email: user.Email, Roles: user.Roles } });
+});
+
+// Refresh token endpoint
+app.post('/api/auth/refresh', async (req, res) => {
+  try {
+    const token = req.cookies.refresh_token;
+    if (!token) return res.status(401).json({ success: false, error: 'No refresh token' });
+    let decoded;
+    try {
+      decoded = jwt.verify(token, REFRESH_TOKEN_SECRET);
+    } catch (e) {
+      return res.status(401).json({ success: false, error: 'Invalid refresh token' });
+    }
+    const access = signAccessToken({ id: decoded.id, role: decoded.role });
+    // Optionally rotate refresh token
+    const refresh = signRefreshToken({ id: decoded.id, role: decoded.role });
+    setRefreshCookie(res, refresh);
+    return res.json({ success: true, data: { token: access } });
+  } catch (e) {
+    console.error('Refresh error', e);
+    return res.status(500).json({ success: false, error: 'Failed to refresh token' });
+  }
+});
+
+// Forgot password
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const schema = Joi.object({ email: Joi.string().email().required() });
+    const { error, value } = schema.validate(req.body || {});
+    if (error) return res.status(400).json({ success: false, error: error.message });
+    const email = String(value.email).toLowerCase();
+    let userId = null;
+    if (mongoConnected && UserModel) {
+      const user = await UserModel.findOne({ email });
+      if (user) userId = user._id;
+    } else {
+      const users = readJson(usersFile);
+      const u = users.find((x) => String(x.Email).toLowerCase() === email);
+      if (u) userId = u.ID;
+    }
+    // Always respond success to avoid user enumeration
+    if (userId) {
+      const token = jwt.sign({ id: userId, action: 'reset' }, JWT_SECRET, { expiresIn: '1h' });
+      const base = process.env.APP_BASE_URL || 'http://localhost:5173';
+      const link = `${base}/reset-password/${token}`;
+      await sendEmailSafe({ from: process.env.SMTP_FROM || 'noreply@example.com', to: email, subject: 'Reset your password', text: `Reset link: ${link}` });
+    }
+    return res.json({ success: true, data: true });
+  } catch (e) {
+    console.error('Forgot password error', e);
+    return res.status(500).json({ success: false, error: 'Failed to process request' });
+  }
+});
+
+// Reset password
+app.post('/api/auth/reset-password/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch {
+      return res.status(400).json({ success: false, error: 'Invalid or expired token' });
+    }
+    if (decoded.action !== 'reset') return res.status(400).json({ success: false, error: 'Invalid token action' });
+    const schema = Joi.object({ password: Joi.string().min(8).max(128).pattern(/[A-Z]/).pattern(/[a-z]/).pattern(/[0-9]/).required() });
+    const { error, value } = schema.validate(req.body || {});
+    if (error) return res.status(400).json({ success: false, error: error.message });
+    const hashed = await bcrypt.hash(String(value.password), 10);
+    if (mongoConnected && UserModel) {
+      await UserModel.findByIdAndUpdate(decoded.id, { password: hashed });
+    } else {
+      const users = readJson(usersFile);
+      const idx = users.findIndex((u) => String(u.ID) === String(decoded.id));
+      if (idx >= 0) {
+        users[idx].password = hashed;
+        writeJson(usersFile, users);
+      }
+    }
+    return res.json({ success: true, data: true });
+  } catch (e) {
+    console.error('Reset password error', e);
+    return res.status(500).json({ success: false, error: 'Failed to reset password' });
+  }
+});
+
+// Verify email
+app.get('/api/auth/verify-email/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch {
+      return res.status(400).json({ success: false, error: 'Invalid or expired token' });
+    }
+    if (decoded.action !== 'verify') return res.status(400).json({ success: false, error: 'Invalid token action' });
+    if (mongoConnected && UserModel) {
+      await UserModel.findByIdAndUpdate(decoded.id, { isVerified: true });
+    } else {
+      const users = readJson(usersFile);
+      const idx = users.findIndex((u) => String(u.ID) === String(decoded.id));
+      if (idx >= 0) {
+        users[idx].isVerified = true;
+        writeJson(usersFile, users);
+      }
+    }
+    return res.json({ success: true, data: true });
+  } catch (e) {
+    console.error('Verify email error', e);
+    return res.status(500).json({ success: false, error: 'Failed to verify email' });
+  }
 });
 
 // Minimal seller routes for JWT-protected endpoints used by axios in simple pages
@@ -519,7 +716,7 @@ app.post('/api/sellers', upload.fields([
 ]), async (req, res) => {
   try {
     const user = await currentUser(req);
-    if (!user) return res.status(401).json({ error: 'Authentication required' });
+    if (!user) return res.status(401).json({ success: false, error: 'Authentication required' });
     
     const body = req.body || {};
     const files = req.files || {};
@@ -530,7 +727,7 @@ app.post('/api/sellers', upload.fields([
       // Check if seller already exists for this user
       const existingSeller = await SellerModel.findOne({ userId: user.ID });
       if (existingSeller) {
-        return res.status(409).json({ error: 'Seller profile already exists for this user' });
+        return res.status(409).json({ success: false, error: 'Seller profile already exists for this user' });
       }
       
       const created = await SellerModel.create({
@@ -546,7 +743,7 @@ app.post('/api/sellers', upload.fields([
         profileImagePath: profileImage ? `/api/uploads/${profileImage}` : null,
         bannerImagePath: bannerImage ? `/api/uploads/${bannerImage}` : null
       });
-      res.json({ data: created });
+      res.json({ success: true, data: created });
       return;
     }
 
@@ -571,10 +768,10 @@ app.post('/api/sellers', upload.fields([
     };
     sellers.push(created);
     writeJson(sellersFile, sellers);
-    res.json({ data: created });
+    res.json({ success: true, data: created });
   } catch (error) {
     console.error('Create seller error', error);
-    res.status(500).json({ error: 'Failed to create seller' });
+    res.status(500).json({ success: false, error: 'Failed to create seller' });
   }
 });
 
@@ -582,12 +779,12 @@ app.post('/api/sellers', upload.fields([
 app.get('/api/sellers/me', async (req, res) => {
   try {
     const user = await currentUser(req);
-    if (!user) return res.status(401).json({ error: 'Authentication required' });
+    if (!user) return res.status(401).json({ success: false, error: 'Authentication required' });
     
     if (mongoConnected && SellerModel) {
       const seller = await SellerModel.findOne({ userId: user.ID });
-      if (!seller) return res.status(404).json({ error: 'Seller profile not found' });
-      res.json({ data: seller });
+      if (!seller) return res.status(404).json({ success: false, error: 'Seller profile not found' });
+      res.json({ success: true, data: seller });
       return;
     }
     
@@ -595,11 +792,11 @@ app.get('/api/sellers/me', async (req, res) => {
     const sellersFile = tableIdToFile[39101];
     const sellers = readJson(sellersFile);
     const seller = sellers.find(s => s.userId === user.ID);
-    if (!seller) return res.status(404).json({ error: 'Seller profile not found' });
-    res.json({ data: seller });
+    if (!seller) return res.status(404).json({ success: false, error: 'Seller profile not found' });
+    res.json({ success: true, data: seller });
   } catch (error) {
     console.error('Get seller error', error);
-    res.status(500).json({ error: 'Failed to get seller profile' });
+    res.status(500).json({ success: false, error: 'Failed to get seller profile' });
   }
 });
 
@@ -610,7 +807,7 @@ app.post('/api/products', upload.fields([
 ]), async (req, res) => {
   try {
     const user = await currentUser(req);
-    if (!user) return res.status(401).json({ error: 'Authentication required' });
+    if (!user) return res.status(401).json({ success: false, error: 'Authentication required' });
     
     // Get seller profile
     let seller = null;
@@ -622,7 +819,7 @@ app.post('/api/products', upload.fields([
       seller = sellers.find(s => s.userId === user.ID);
     }
     
-    if (!seller) return res.status(404).json({ error: 'Seller profile not found. Please create a seller profile first.' });
+    if (!seller) return res.status(404).json({ success: false, error: 'Seller profile not found. Please create a seller profile first.' });
     
     const body = req.body || {};
     const files = req.files || {};
@@ -646,7 +843,7 @@ app.post('/api/products', upload.fields([
         mainImagePath: mainImage ? `/api/uploads/${mainImage}` : null,
         additionalImages: additionalImages
       });
-      res.json({ data: created });
+      res.json({ success: true, data: created });
       return;
     }
 
@@ -673,10 +870,10 @@ app.post('/api/products', upload.fields([
     };
     products.push(created);
     writeJson(productsFile, products);
-    res.json({ data: created });
+    res.json({ success: true, data: created });
   } catch (error) {
     console.error('Create product error', error);
-    res.status(500).json({ error: 'Failed to create product' });
+    res.status(500).json({ success: false, error: 'Failed to create product' });
   }
 });
 
@@ -684,7 +881,7 @@ app.post('/api/products', upload.fields([
 app.get('/api/products/me', async (req, res) => {
   try {
     const user = await currentUser(req);
-    if (!user) return res.status(401).json({ error: 'Authentication required' });
+    if (!user) return res.status(401).json({ success: false, error: 'Authentication required' });
     
     // Get seller profile
     let seller = null;
@@ -700,7 +897,7 @@ app.get('/api/products/me', async (req, res) => {
     
     if (mongoConnected && ProductModel) {
       const products = await ProductModel.find({ sellerId: seller._id });
-      res.json({ data: products });
+      res.json({ success: true, data: products });
       return;
     }
     
@@ -708,10 +905,10 @@ app.get('/api/products/me', async (req, res) => {
     const productsFile = tableIdToFile[39102];
     const products = readJson(productsFile);
     const sellerProducts = products.filter(p => p.seller_id === (seller._id || seller.id));
-    res.json({ data: sellerProducts });
+    res.json({ success: true, data: sellerProducts });
   } catch (error) {
     console.error('Get products error', error);
-    res.status(500).json({ error: 'Failed to get products' });
+    res.status(500).json({ success: false, error: 'Failed to get products' });
   }
 });
 
@@ -743,7 +940,7 @@ function applyFilters(items, filters = []) {
 app.post('/api/table/page/:tableId', (req, res) => {
   const tableId = Number(req.params.tableId);
   const fileName = tableIdToFile[tableId];
-  if (!fileName) return res.status(404).json({ error: 'Unknown table' });
+  if (!fileName) return res.status(404).json({ success: false, error: 'Unknown table' });
   const { PageNo = 1, PageSize = 20, OrderByField = 'id', IsAsc = true, Filters = [] } = req.body || {};
   let items = readJson(fileName);
   items = applyFilters(items, Filters);
@@ -757,20 +954,20 @@ app.post('/api/table/page/:tableId', (req, res) => {
   const virtualCount = items.length;
   const start = (PageNo - 1) * PageSize;
   const paged = items.slice(start, start + PageSize);
-  res.json({ data: { List: paged, VirtualCount: virtualCount } });
+  res.json({ success: true, data: { List: paged, VirtualCount: virtualCount } });
 });
 
 app.post('/api/table/create/:tableId', (req, res) => {
   const tableId = Number(req.params.tableId);
   const fileName = tableIdToFile[tableId];
-  if (!fileName) return res.status(404).json({ error: 'Unknown table' });
+  if (!fileName) return res.status(404).json({ success: false, error: 'Unknown table' });
   const record = req.body || {};
   const items = readJson(fileName);
   const nextId = items.length ? Math.max(...items.map((i) => i.id || 0)) + 1 : 1;
   const toSave = { id: nextId, ...record };
   items.push(toSave);
   writeJson(fileName, items);
-  res.json({ data: toSave });
+  res.json({ success: true, data: toSave });
 });
 
 app.listen(PORT, () => {
