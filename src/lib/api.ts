@@ -6,18 +6,31 @@ export type TablePageRequest = {
   Filters?: Array<{ name: string; op: string; value: any }>;
 };
 
-async function request<T>(url: string, options: RequestInit = {}): Promise<{ data?: T; error?: any }> {
+type ApiResult<T> = { data?: T; error?: any };
+
+const BASE_URL: string = (typeof window !== 'undefined' && (window as any).VITE_API_BASE_URL)
+  ? (window as any).VITE_API_BASE_URL
+  : (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) || '/api';
+
+function buildUrl(path: string): string {
+  if (/^https?:\/\//.test(path)) return path;
+  if (path.startsWith('/')) return `${BASE_URL}${path.replace(/^\/+/, '/')}`;
+  return `${BASE_URL}/${path}`;
+}
+
+async function request<T>(url: string, options: RequestInit = {}): Promise<ApiResult<T>> {
   try {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const authHeader = token ? { Authorization: `Bearer ${token}` } : {} as any;
-    const res = await fetch(url, {
+    const res = await fetch(buildUrl(url), {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json', ...authHeader, ...(options.headers || {}) },
       ...options
     });
     const json = await res.json().catch(() => ({}));
-    if (!res.ok) return { error: json?.error || res.statusText };
-    return { data: json.data as T };
+    if (!res.ok) return { error: json?.error || json?.message || res.statusText };
+    const data = (json?.data !== undefined ? json.data : json) as T;
+    return { data };
   } catch (error) {
     return { error };
   }
@@ -25,28 +38,12 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<{ dat
 
 export const api = {
   auth: {
-    register: async (payload: { email: string; password: string; role?: string; firstName?: string; lastName?: string; phone?: string; address?: string }) => {
-      try {
-        const res = await fetch('/api/auth/register', { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) return { error: json?.message || json?.error || res.statusText } as any;
-        return json as any;
-      } catch (error) {
-        return { error } as any;
-      }
-    },
-    login: async (payload: { email: string; password: string; role?: string }) => {
-      try {
-        const res = await fetch('/api/auth/login', { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) return { error: json?.message || json?.error || res.statusText } as any;
-        return json as any;
-      } catch (error) {
-        return { error } as any;
-      }
-    },
-    logout: () => request('/api/auth/logout', { method: 'POST' }),
-    me: () => request('/api/auth/me')
+    register: (payload: { email: string; password: string; role?: string; firstName?: string; lastName?: string; phone?: string; address?: string }) =>
+      request('/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
+    login: (payload: { email: string; password: string; role?: string }) =>
+      request('/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+    logout: () => request('/auth/logout', { method: 'POST' }),
+    me: () => request('/auth/me')
   },
   sellers: {
     create: async (payload: any) => {
@@ -61,7 +58,7 @@ export const api = {
         }
       });
       try {
-        const res = await fetch('/api/sellers', { method: 'POST', body: form, credentials: 'include' });
+        const res = await fetch(buildUrl('/sellers'), { method: 'POST', body: form, credentials: 'include' });
         const json = await res.json().catch(() => ({}));
         if (!res.ok) return { error: json?.error || res.statusText } as any;
         return { data: json.data } as any;
@@ -69,7 +66,7 @@ export const api = {
         return { error } as any;
       }
     },
-    getMe: () => request('/api/sellers/me')
+    getMe: () => request('/sellers/me')
   },
   products: {
     create: async (payload: any) => {
@@ -88,7 +85,7 @@ export const api = {
         }
       });
       try {
-        const res = await fetch('/api/products', { method: 'POST', body: form, credentials: 'include' });
+        const res = await fetch(buildUrl('/products'), { method: 'POST', body: form, credentials: 'include' });
         const json = await res.json().catch(() => ({}));
         if (!res.ok) return { error: json?.error || res.statusText } as any;
         return { data: json.data } as any;
@@ -96,14 +93,14 @@ export const api = {
         return { error } as any;
       }
     },
-    getMe: () => request('/api/products/me')
+    getMe: () => request('/products/me')
   },
   upload: {
     image: async (file: File) => {
       const form = new FormData();
       form.append('image', file);
       try {
-        const res = await fetch('/api/upload', { method: 'POST', body: form, credentials: 'include' });
+        const res = await fetch(buildUrl('/upload'), { method: 'POST', body: form, credentials: 'include' });
         const json = await res.json().catch(() => ({}));
         if (!res.ok) return { error: json?.error || res.statusText } as any;
         return { data: json.data } as any;
@@ -113,20 +110,20 @@ export const api = {
     }
   },
   orders: {
-    create: (payload: any) => request('/api/orders', { method: 'POST', body: JSON.stringify(payload) })
+    create: (payload: any) => request('/orders', { method: 'POST', body: JSON.stringify(payload) })
   },
   payments: {
-    simulate: (payload: any) => request('/api/payments/simulate', { method: 'POST', body: JSON.stringify(payload) })
+    simulate: (payload: any) => request('/payments/simulate', { method: 'POST', body: JSON.stringify(payload) })
   },
   sellerBanking: {
-    get: () => request('/api/sellers/banking'),
-    save: (payload: any) => request('/api/sellers/banking', { method: 'POST', body: JSON.stringify(payload) })
+    get: () => request('/sellers/banking'),
+    save: (payload: any) => request('/sellers/banking', { method: 'POST', body: JSON.stringify(payload) })
   },
   table: {
     page: (tableId: number, payload: TablePageRequest) =>
-      request(`/api/table/page/${tableId}`, { method: 'POST', body: JSON.stringify(payload) }),
+      request(`/table/page/${tableId}`, { method: 'POST', body: JSON.stringify(payload) }),
     create: (tableId: number, payload: any) =>
-      request(`/api/table/create/${tableId}`, { method: 'POST', body: JSON.stringify(payload) })
+      request(`/table/create/${tableId}`, { method: 'POST', body: JSON.stringify(payload) })
   }
 };
 

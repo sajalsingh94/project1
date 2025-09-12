@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, Facebook, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { api } from '@/lib/api';
 
 const emailSchema = z.string().email();
 const passwordSchema = z.string().min(8);
@@ -136,7 +137,7 @@ const SignUpPage: React.FC = () => {
         phone: '', 
         address: '' 
       };
-      const { error } = await window.ezsite?.apis?.register(payload);
+      const { error } = await api.auth.register(payload);
       if (error) {
         toast({
           title: "Registration Failed",

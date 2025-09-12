@@ -1,30 +1,24 @@
-import axios from 'axios';
+import { api } from './api';
 
 async function register(payload: any) {
   if (typeof window !== 'undefined' && (window as any).ezsite?.apis?.register) {
     return (window as any).ezsite.apis.register(payload);
   }
-  const res = await axios.post('/api/auth/register', payload, { headers: { 'Content-Type': 'application/json' } });
-  return res.data;
+  return api.auth.register(payload);
 }
 
 async function login(payload: any) {
   if (typeof window !== 'undefined' && (window as any).ezsite?.apis?.login) {
     return (window as any).ezsite.apis.login(payload);
   }
-  const res = await axios.post('/api/auth/login', payload, { headers: { 'Content-Type': 'application/json' } });
-  return res.data;
+  return api.auth.login(payload);
 }
 
 async function me() {
   if (typeof window !== 'undefined' && (window as any).ezsite?.apis?.getUserInfo) {
     return (window as any).ezsite.apis.getUserInfo();
   }
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  const headers: any = { 'Content-Type': 'application/json' };
-  if (token) headers.Authorization = `Bearer ${token}`;
-  const res = await axios.get('/api/auth/me', { headers });
-  return res.data;
+  return api.auth.me();
 }
 
 async function logout() {
@@ -36,7 +30,7 @@ async function logout() {
   if ((window as any)?.ezsite?.apis?.logout) {
     return (window as any).ezsite.apis.logout();
   }
-  return { success: true };
+  return api.auth.logout();
 }
 
 export default { register, login, me, logout };
